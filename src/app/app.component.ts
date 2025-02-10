@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { TodosComponent } from './todos.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  imports: [TodosComponent],
+  template: `<app-todos />`,
 })
 export class AppComponent {
-  title = 'ngrx-signal-store-feature-conditional';
 }
