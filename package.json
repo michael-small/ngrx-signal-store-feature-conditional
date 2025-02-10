@@ -18,6 +18,7 @@
     "@angular/platform-browser": "^19.1.5",
     "@angular/platform-browser-dynamic": "^19.1.5",
     "@angular/router": "^19.1.5",
+    "@ngrx/operators": "^19.0.1",
     "@ngrx/signals": "^19.0.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
