@@ -8,6 +8,7 @@ import { JsonPipe } from '@angular/common';
   template: `
     <pre>{{todos() | json}}</pre>
     <button (click)="addTodos()">Add TODOs</button>
+    <button (click)="callAltMethods()">Alt methods that work</button>
   `,
   styles: ``,
   providers: [TodoStore]
@@ -18,6 +19,11 @@ export class TodosComponent {
     todos = this.todoStore.items;
 
     addTodos() {
-        this.todoStore.add('test')
+        this.todoStore.add({id: '1', value: '', done: false})
+    }
+
+    callAltMethods() {
+        this.todoStore.getItems()
+        this.todoStore.doThing()
     }
 }

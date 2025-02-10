@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { signalStore, withState } from '@ngrx/signals';
 import { CrudService } from './crud.service';
@@ -6,6 +6,7 @@ import { BaseState } from './opt-in-CRUD.store.feature';
 import { Todo } from './opt-in-CRUD.store.feature';
 import { withCrudOperations } from './opt-in-CRUD.store.feature';
 import { Observable, EMPTY } from 'rxjs';
+import { withCrudOperationsAlt } from './alt.store';
 
 @Injectable({
   providedIn: 'root',
@@ -46,8 +47,9 @@ export const TodoStore = signalStore(
   withState(initialState),
   withCrudOperations(TodoService, {
     add: true,
-    load: false,
+    load: true,
     delete: false,
-    update: true,
-  })
+    update: false,
+  }),
+  withCrudOperationsAlt()
 );

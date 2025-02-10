@@ -1,4 +1,4 @@
-import { Observable, pipe, switchMap } from 'rxjs';
+import { Observable, pipe, switchMap, tap } from 'rxjs';
 import { computed, inject, Injector, Type } from '@angular/core';
 import {
   patchState,
@@ -33,7 +33,7 @@ type CrudConfig = {
 type CrudMethods<
   Config extends CrudConfig,
   Entity extends BaseEntity
-> = (Config['add'] extends true ? { add: (value: string) => void } : {}) &
+> = (Config['add'] extends true ? { add: (value: Entity) => void } : {}) &
   (Config['load'] extends true
     ? { getItem: (id: string) => void; getItems: () => void }
     : {}) &
@@ -50,19 +50,19 @@ export function withCrudOperations<
     },
     // Provided what I ran with down there is legit, this is what I am hung up on
     // I would think that it returning {} was part of the point
-    withMethods((store) => {
+    withMethods((store, injector = inject(Injector)) => {
       const conf = config;
       const service = inject(DataService);
 
       const methods: Record<string, Function> = {};
 
-      const injector = inject(Injector);
-      
       if (config.add) {
         methods['add'] = (value: Entity) => {
           return rxMethod<Entity>(
             pipe(
               switchMap((value) => {
+                console.log('hit');
+                alert('hit real')
                 patchState(store, { loading: true });
 
                 return service.addItem!(value).pipe(
@@ -77,7 +77,8 @@ export function withCrudOperations<
                   })
                 );
               })
-            )
+            ),
+            { injector: injector }
           );
         };
       }
@@ -88,6 +89,9 @@ export function withCrudOperations<
 
       if (config.load) {
         // provide implementation
+        methods['getItems'] = () => {
+          return console.log('fake getItems hit');
+        };
       }
 
       if (config.update) {
