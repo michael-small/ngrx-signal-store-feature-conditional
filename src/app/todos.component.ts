@@ -18,6 +18,6 @@ export class TodosComponent {
     todos = this.todoStore.items;
 
     addTodos() {
-        this.todoStore.add('test')
+        this.todoStore.add({id: '1', done: false, value: 'test'})
     }
 }
