@@ -5,7 +5,7 @@ import { CrudService } from './crud.service';
 import { BaseState } from './opt-in-CRUD.store.feature';
 import { Todo } from './opt-in-CRUD.store.feature';
 import { withCrudOperations } from './opt-in-CRUD.store.feature';
-import { Observable, EMPTY } from 'rxjs';
+import { Observable, EMPTY, filter, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,12 +15,14 @@ export class TodoService implements CrudService<Todo> {
 
   private url = `https://jsonplaceholder.typicode.com/todos`;
 
-  getItem(id: string) {
+  getItem(id: number) {
     return this.http.get<Todo>(`${this.url}/${id}`);
   }
 
   getItems(): Observable<Todo[]> {
-    return this.http.get<Todo[]>(this.url);
+    return this.http.get<Todo[]>(this.url).pipe(
+        map(todos => todos.filter(td => td.id < 5))
+    );
   }
 
   addItem(value: Todo) {
@@ -37,6 +39,7 @@ export class TodoService implements CrudService<Todo> {
 }
 export interface TodoState extends BaseState<Todo> {}
 export const initialState: TodoState = {
+  selectedItem: null,
   items: [],
   loading: false,
 };

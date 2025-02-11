@@ -20,6 +20,7 @@ export interface Todo extends BaseEntity {
 }
 
 export type BaseState<Entity> = {
+  selectedItem: Entity | null;
   items: Entity[];
   loading: boolean;
 };
@@ -36,7 +37,7 @@ type CrudMethods<
   Entity extends BaseEntity
 > = (Config['add'] extends true ? { add: (value: Entity) => void } : {}) &
   (Config['load'] extends true
-    ? { getItem: (id: string) => void; getItems: () => void }
+    ? { getItem: (id: number) => void; getItems: () => void }
     : {}) &
   (Config['delete'] extends true ? { remove: (value: Entity) => void } : {}) &
   (Config['update'] extends true ? { update: (value: Entity) => void } : {});
@@ -101,9 +102,46 @@ type CrudMethods<
       }
 
       if (config.load) {
-        methods['getItems'] = () => {
-          return console.log('fake getItems hit');
-        };
+        const loadAll = rxMethod<void>(
+            pipe(
+                switchMap(() => {
+                    patchState(store, { loading: true });
+
+                    return service.getItems().pipe(
+                        tapResponse({
+                            next: (items) => {
+                                patchState(store, {
+                                    items: items,
+                                });
+                            },
+                            error: console.error,
+                            finalize: () => patchState(store, { loading: false }),
+                        })
+                    )
+                })
+            )
+        )
+        const load = rxMethod<number>(
+            pipe(
+                switchMap((id) => {
+                    patchState(store, { loading: true });
+
+                    return service.getItem(id).pipe(
+                        tapResponse({
+                            next: (item) => {
+                                patchState(store, {
+                                    selectedItem: item,
+                                });
+                            },
+                            error: console.error,
+                            finalize: () => patchState(store, { loading: false }),
+                        })
+                    )
+                })
+            )
+        )
+        methods['getItem'] = (value: Entity['id']) => load(value);
+        methods['getItems'] = (value: Entity) => loadAll();
       }
 
       if (config.update) {

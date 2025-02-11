@@ -14,6 +14,10 @@ import { Todo } from './opt-in-CRUD.store.feature';
         </div>
     }
     <button (click)="addTodos()">Add TODOs</button>
+    <button (click)="getTodo(1)">Get TODO #1</button>
+    @if (todoStore.selectedItem()) {
+        <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+    }
   `,
   styles: ``,
   providers: [TodoStore]
@@ -32,5 +36,16 @@ export class TodosComponent {
 
     removeTodo(todo: Todo) {
         this.todoStore.remove(todo)
+    }
+
+    getTodo(id: Todo['id']) {
+        this.todoStore.getItem(id)
+    }
+    getTodos() {
+        this.todoStore.getItems();
+    }
+
+    ngOnInit() {
+        this.getTodos()
     }
 }
