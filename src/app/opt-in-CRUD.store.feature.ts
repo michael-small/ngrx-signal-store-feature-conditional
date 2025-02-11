@@ -28,10 +28,10 @@ type CrudConfig = {
   update: boolean;
 };
 
-// The users can implement a `Partial` of this service, provided that
-//     it matches the respective CrudConfig options.
-// The feature uses non-null assertions (`!`) internally with the 
-//     assumption that the `CrudConfig` is valid to what the 
+// The users can implement a `Partial` (or to be more precise use a `Pick`)
+//     of this service, provided that it matches the respective CrudConfig options.
+// The feature uses non-null assertions (`!`) internally with the
+//     assumption that the `CrudConfig` is valid to what the
 //     implementing service offers.
 export interface CrudService<T> {
   create(value: T): Observable<T>;
