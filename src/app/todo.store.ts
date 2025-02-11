@@ -20,7 +20,7 @@ export class TodoService implements CrudService<Todo> {
   }
 
   getItems(): Observable<Todo[]> {
-    return EMPTY;
+    return this.http.get<Todo[]>(this.url);
   }
 
   addItem(value: Todo) {
@@ -46,8 +46,8 @@ export const TodoStore = signalStore(
   withState(initialState),
   withCrudOperations(TodoService, {
     add: true,
-    load: false,
-    delete: false,
+    load: true,
+    delete: true,
     update: true,
   })
 );

@@ -11,11 +11,12 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { CrudService } from './crud.service';
 
-export type BaseEntity = { id: string };
+export type BaseEntity = { id: number };
 
 export interface Todo extends BaseEntity {
-  value: string;
-  done: boolean;
+  title: string;
+  completed: boolean;
+  userId: number;
 }
 
 export type BaseState<Entity> = {
@@ -48,7 +49,7 @@ type CrudMethods<
     {
       state: type<BaseState<Entity>>(),
     },
-    withMethods((store, injector = inject(Injector)) => {
+    withMethods((store) => {
       const service = inject(DataService);
       const methods: Record<string, Function> = {};
 
@@ -76,7 +77,27 @@ type CrudMethods<
       }
 
       if (config.delete) {
-        // provide implementation
+        // `delete` is a reverved word
+        const d3lete = rxMethod<Entity>(
+            pipe(
+                switchMap((item) => {
+                    patchState(store, { loading: true });
+
+                    return service.deleteItem(item).pipe(
+                        tapResponse({
+                            next: () => {
+                                patchState(store, {
+                                    items: [...store.items().filter((x) => x.id !== item.id)],
+                                });
+                            },
+                            error: console.error,
+                            finalize: () => patchState(store, { loading: false }),
+                        })
+                    );
+                })
+            )
+        )
+        methods['remove'] = (value: Entity) => d3lete(value);
       }
 
       if (config.load) {
