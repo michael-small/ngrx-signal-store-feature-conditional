@@ -11,6 +11,7 @@ import { Todo } from './opt-in-CRUD.store.feature';
         <div>
             <pre>{{todo | json}}</pre>
             <button (click)="removeTodo(todo)">x</button>
+            <button (click)="updateTodo(todo)">Flip completed state</button>
         </div>
     }
     <button (click)="addTodos()">Add TODOs</button>
@@ -41,8 +42,14 @@ export class TodosComponent {
     getTodo(id: Todo['id']) {
         this.todoStore.getItem(id)
     }
+    
     getTodos() {
         this.todoStore.getItems();
+    }
+
+    updateTodo(todo: Todo) {
+        const _todo = todo;
+        this.todoStore.update({..._todo, completed: !_todo.completed});
     }
 
     ngOnInit() {

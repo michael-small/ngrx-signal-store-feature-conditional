@@ -141,11 +141,35 @@ type CrudMethods<
             )
         )
         methods['getItem'] = (value: Entity['id']) => load(value);
-        methods['getItems'] = (value: Entity) => loadAll();
+        methods['getItems'] = () => loadAll();
       }
 
       if (config.update) {
-        // provide implementation
+        const update = rxMethod<Entity>(
+            pipe(
+              switchMap((item) => {
+                patchState(store, { loading: true });
+  
+                return service.updateItem(item).pipe(
+                  tapResponse({
+                    next: (updatedItem) => {
+                      const allItems = [...store.items()];
+                      const index = allItems.findIndex((x) => x.id === item.id);
+  
+                      allItems[index] = updatedItem;
+  
+                      patchState(store, {
+                        items: allItems,
+                      });
+                    },
+                    error: console.error,
+                    finalize: () => patchState(store, { loading: false }),
+                  })
+                );
+              })
+            )
+          )
+          methods['update'] = (value: Entity) => update(value)
       }
 
       return methods as CrudMethods<Config, Entity>;
