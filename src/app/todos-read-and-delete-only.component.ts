@@ -1,39 +1,45 @@
 import { Component, inject, signal } from '@angular/core';
-import { TodoStore } from './todo.store';
+import { TodoService } from './todo.store';
 import { JsonPipe } from '@angular/common';
-import { Todo } from './opt-in-CRUD.store.feature';
+import { Todo, withCrudOperations } from './opt-in-CRUD.store.feature';
+import { signalStore, withState } from '@ngrx/signals';
+import { initialState } from './crud.service';
+
+export const TodoReadAndDeleteOnlyStore = signalStore(
+  { providedIn: 'root' },
+  withState(initialState),
+  withCrudOperations(TodoService, {
+    add: false,
+    load: true,
+    delete: true,
+    update: false,
+  })
+);
 
 @Component({
-  selector: 'app-todos',
+  selector: 'app-todos-read-and-delete-only',
   imports: [JsonPipe],
   template: `
     @for (todo of todos(); track $index) {
         <div>
             <pre>{{todo | json}}</pre>
             <button (click)="removeTodo(todo)">x</button>
-            <button (click)="updateTodo(todo)">Flip completed state</button>
         </div>
     }
-    <button (click)="addTodos()">Add TODOs</button>
     <button (click)="getTodo(1)">Get TODO #1</button>
     @if (todoStore.selectedItem()) {
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
   `,
   styles: ``,
-  providers: [TodoStore]
+  providers: [TodoReadAndDeleteOnlyStore]
 })
-export class TodosComponent {
-    todoStore = inject(TodoStore);
+export class TodosReadAndDeleteOnlyComponent {
+    todoStore = inject(TodoReadAndDeleteOnlyStore);
 
     todos = this.todoStore.items;
 
     defaultId = signal(0);
-
-    addTodos() {
-        this.todoStore.add({id: this.defaultId(), completed: false, title: 'test', userId: 1})
-        this.defaultId.set(this.defaultId() + 1)
-    }
 
     removeTodo(todo: Todo) {
         this.todoStore.remove(todo)
@@ -45,11 +51,6 @@ export class TodosComponent {
     
     getTodos() {
         this.todoStore.getItems();
-    }
-
-    updateTodo(todo: Todo) {
-        const _todo = todo;
-        this.todoStore.update({..._todo, completed: !_todo.completed});
     }
 
     ngOnInit() {

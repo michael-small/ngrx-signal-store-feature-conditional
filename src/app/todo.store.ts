@@ -1,11 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { signalStore, withState } from '@ngrx/signals';
-import { CrudService } from './crud.service';
-import { BaseState } from './opt-in-CRUD.store.feature';
 import { Todo } from './opt-in-CRUD.store.feature';
-import { withCrudOperations } from './opt-in-CRUD.store.feature';
-import { Observable, EMPTY, filter, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
+import { CrudService } from './crud.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +18,7 @@ export class TodoService implements CrudService<Todo> {
 
   getItems(): Observable<Todo[]> {
     return this.http.get<Todo[]>(this.url).pipe(
-        map(todos => todos.filter(td => td.id < 5))
+        map(todos => todos.filter(td => td.id < 3))
     );
   }
 
@@ -37,20 +34,3 @@ export class TodoService implements CrudService<Todo> {
     return this.http.delete(`${this.url}/${value.id}`);
   }
 }
-export interface TodoState extends BaseState<Todo> {}
-export const initialState: TodoState = {
-  selectedItem: null,
-  items: [],
-  loading: false,
-};
-
-export const TodoStore = signalStore(
-  { providedIn: 'root' },
-  withState(initialState),
-  withCrudOperations(TodoService, {
-    add: true,
-    load: true,
-    delete: true,
-    update: true,
-  })
-);

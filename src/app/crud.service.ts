@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { BaseState, Todo } from './opt-in-CRUD.store.feature';
 
 export interface CrudService<T> {
   getItems(): Observable<T[]>;
@@ -11,3 +12,11 @@ export interface CrudService<T> {
 
   deleteItem(value: T): Observable<any>;
 }
+
+export interface TodoState extends BaseState<Todo> {}
+
+export const initialState: TodoState = {
+  selectedItem: null,
+  items: [],
+  loading: false,
+};
