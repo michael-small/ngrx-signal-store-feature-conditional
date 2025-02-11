@@ -1,5 +1,5 @@
 import { Component, inject, signal } from '@angular/core';
-import { initialState, Todo, TodoService } from '../todo.service';
+import { initialState, Todo, TodoReadOnlyService } from '../todo.service';
 import { JsonPipe } from '@angular/common';
 import { withCrudOperations } from '../opt-in-CRUD.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
@@ -7,7 +7,7 @@ import { signalStore, withState } from '@ngrx/signals';
 export const TodoReadOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
-    withCrudOperations(TodoService, {
+    withCrudOperations(TodoReadOnlyService, {
       create: false,
       read: true,
       update: false,
