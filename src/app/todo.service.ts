@@ -60,7 +60,6 @@ export class TodoAllCRUDService implements CrudService<Todo> {
     providedIn: 'root',
   })
   export class TodoReadAndDeleteOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne' | 'delete'> {
-  // export class TodoService implements CrudService<Todo> {
     private readonly http = inject(HttpClient);
   
     private url = `https://jsonplaceholder.typicode.com/todos`;
@@ -85,7 +84,6 @@ export class TodoAllCRUDService implements CrudService<Todo> {
     providedIn: 'root',
   })
   export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne'> {
-  // export class TodoService implements CrudService<Todo> {
     private readonly http = inject(HttpClient);
   
     private url = `https://jsonplaceholder.typicode.com/todos`;
