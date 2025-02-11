@@ -1,8 +1,21 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Todo } from './opt-in-CRUD.store.feature';
-import { Observable, map } from 'rxjs';
-import { CrudService } from './crud.service';
+import { map, Observable } from 'rxjs';
+import { BaseEntity, BaseState, CrudService } from './opt-in-CRUD.store.feature';
+
+export interface TodoState extends BaseState<Todo> { }
+
+export interface Todo extends BaseEntity {
+    title: string;
+    completed: boolean;
+    userId: number;
+}
+
+export const initialState: TodoState = {
+    selectedItem: null,
+    items: [],
+    loading: false,
+};
 
 @Injectable({
   providedIn: 'root',

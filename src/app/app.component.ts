@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { TodosAllCRUDComponent } from './todos-all-crud.component';
-import { TodosReadOnlyComponent } from './todos-read-only.component';
-import { TodosReadAndDeleteOnlyComponent } from './todos-read-and-delete-only.component';
+import { TodosAllCRUDComponent } from './crud-components/todos-all-crud.component';
+import { TodosReadOnlyComponent } from './crud-components/todos-read-only.component';
+import { TodosReadAndDeleteOnlyComponent } from './crud-components/todos-read-and-delete-only.component';
 
 @Component({
   selector: 'app-root',

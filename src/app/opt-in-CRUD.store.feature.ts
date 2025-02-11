@@ -1,5 +1,5 @@
-import { Observable, pipe, switchMap, tap } from 'rxjs';
-import { computed, inject, Injector, Type } from '@angular/core';
+import { Observable, pipe, switchMap } from 'rxjs';
+import { computed, inject, Type } from '@angular/core';
 import {
   patchState,
   signalStoreFeature,
@@ -9,15 +9,8 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-import { CrudService } from './crud.service';
 
 export type BaseEntity = { id: number };
-
-export interface Todo extends BaseEntity {
-  title: string;
-  completed: boolean;
-  userId: number;
-}
 
 export type BaseState<Entity> = {
   selectedItem: Entity | null;
@@ -31,6 +24,18 @@ type CrudConfig = {
   delete: boolean;
   update: boolean;
 };
+
+export interface CrudService<T> {
+  getItems(): Observable<T[]>;
+
+  getItem(id: number): Observable<T>;
+
+  addItem(value: T): Observable<T>;
+
+  updateItem(value: T): Observable<T>;
+
+  deleteItem(value: T): Observable<any>;
+}
 
 type CrudMethods<
   Config extends CrudConfig,
