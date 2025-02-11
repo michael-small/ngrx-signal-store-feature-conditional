@@ -20,7 +20,7 @@ export const initialState: TodoState = {
 @Injectable({
   providedIn: 'root',
 })
-export class TodoService implements CrudService<Todo> {
+export class TodoService implements Partial<CrudService<Todo>> {
   private readonly http = inject(HttpClient);
 
   private url = `https://jsonplaceholder.typicode.com/todos`;

@@ -10,14 +10,17 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
+// Gaurantees minimum identifier + type
 export type BaseEntity = { id: number };
 
+// Minimum for CRUD feature
 export type BaseState<Entity> = {
   selectedItem: Entity | null;
   items: Entity[];
   loading: boolean;
 };
 
+// Feature users can pick and choose what to enable
 type CrudConfig = {
   add: boolean;
   load: boolean;
@@ -25,6 +28,11 @@ type CrudConfig = {
   update: boolean;
 };
 
+// The users can implement a `Partial` of this service, provided that
+//     it matches the respective CrudConfig options.
+// The feature uses non-null assertions (`!`) internally with the 
+//     assumption that the `CrudConfig` is valid to what the 
+//     implementing service offers.
 export interface CrudService<T> {
   getItems(): Observable<T[]>;
 
@@ -37,6 +45,7 @@ export interface CrudService<T> {
   deleteItem(value: T): Observable<any>;
 }
 
+// Methods returned by the store are conditonal to the config provided
 type CrudMethods<
   Config extends CrudConfig,
   Entity extends BaseEntity
@@ -47,10 +56,10 @@ type CrudMethods<
   (Config['delete'] extends true ? { remove: (value: Entity) => void } : {}) &
   (Config['update'] extends true ? { update: (value: Entity) => void } : {});
 
-  export function withCrudOperations<
+export function withCrudOperations<
   Config extends CrudConfig,
   Entity extends BaseEntity
->(DataService: Type<CrudService<Entity>>, config: Config) {
+>(DataService: Type<Partial<CrudService<Entity>>>, config: Config) {
   return signalStoreFeature(
     {
       state: type<BaseState<Entity>>(),
@@ -89,7 +98,7 @@ type CrudMethods<
                 switchMap((item) => {
                     patchState(store, { loading: true });
 
-                    return service.deleteItem(item).pipe(
+                    return service.deleteItem!(item).pipe(
                         tapResponse({
                             next: () => {
                                 patchState(store, {
@@ -112,7 +121,7 @@ type CrudMethods<
                 switchMap(() => {
                     patchState(store, { loading: true });
 
-                    return service.getItems().pipe(
+                    return service.getItems!().pipe(
                         tapResponse({
                             next: (items) => {
                                 patchState(store, {
@@ -131,7 +140,7 @@ type CrudMethods<
                 switchMap((id) => {
                     patchState(store, { loading: true });
 
-                    return service.getItem(id).pipe(
+                    return service.getItem!(id).pipe(
                         tapResponse({
                             next: (item) => {
                                 patchState(store, {
@@ -155,7 +164,7 @@ type CrudMethods<
               switchMap((item) => {
                 patchState(store, { loading: true });
   
-                return service.updateItem(item).pipe(
+                return service.updateItem!(item).pipe(
                   tapResponse({
                     next: (updatedItem) => {
                       const allItems = [...store.items()];
