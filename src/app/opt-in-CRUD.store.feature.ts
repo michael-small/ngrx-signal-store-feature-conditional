@@ -71,9 +71,7 @@ type CrudMethods<
               );
             })
           ),
-          { injector }
         );
-
         methods['add'] = (value: Entity) => add(value);
       }
 
