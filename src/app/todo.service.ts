@@ -25,25 +25,25 @@ export class TodoService implements Partial<CrudService<Todo>> {
 
   private url = `https://jsonplaceholder.typicode.com/todos`;
 
-  getItem(id: number) {
+  getOne(id: number) {
     return this.http.get<Todo>(`${this.url}/${id}`);
   }
 
-  getItems(): Observable<Todo[]> {
+  getAll(): Observable<Todo[]> {
     return this.http.get<Todo[]>(this.url).pipe(
         map(todos => todos.filter(td => td.id < 3))
     );
   }
 
-  addItem(value: Todo) {
+  create(value: Todo) {
     return this.http.post<Todo>(this.url, { value });
   }
 
-  updateItem(value: Todo) {
+  update(value: Todo) {
     return this.http.put<Todo>(`${this.url}/${value.id}`, value);
   }
 
-  deleteItem(value: Todo) {
+  delete(value: Todo) {
     return this.http.delete(`${this.url}/${value.id}`);
   }
 }

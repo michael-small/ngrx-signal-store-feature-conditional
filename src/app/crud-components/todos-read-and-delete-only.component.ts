@@ -8,10 +8,10 @@ export const TodoReadAndDeleteOnlyStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withCrudOperations(TodoService, {
-    add: false,
-    load: true,
-    delete: true,
+    create: false,
+    read: true,
     update: false,
+    delete: true,
   })
 );
 
@@ -38,15 +38,15 @@ export class TodosReadAndDeleteOnlyComponent {
     todos = this.todoStore.items;
 
     removeTodo(todo: Todo) {
-        this.todoStore.remove(todo)
+        this.todoStore.delete(todo)
     }
 
     getTodo(id: Todo['id']) {
-        this.todoStore.getItem(id)
+        this.todoStore.getOne(id)
     }
     
     getTodos() {
-        this.todoStore.getItems();
+        this.todoStore.getAll();
     }
 
     ngOnInit() {

@@ -8,10 +8,10 @@ export const TodoAllCRUDStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withCrudOperations(TodoService, {
-    add: true,
-    load: true,
-    delete: true,
+    create: true,
+    read: true,
     update: true,
+    delete: true,
   })
 );
 
@@ -42,20 +42,20 @@ export class TodosAllCRUDComponent {
     defaultId = signal(0);
 
     addTodos() {
-        this.todoStore.add({id: this.defaultId(), completed: false, title: 'test', userId: 1})
+        this.todoStore.create({id: this.defaultId(), completed: false, title: 'test', userId: 1})
         this.defaultId.set(this.defaultId() + 1)
     }
 
     removeTodo(todo: Todo) {
-        this.todoStore.remove(todo)
+        this.todoStore.delete(todo)
     }
 
     getTodo(id: Todo['id']) {
-        this.todoStore.getItem(id)
+        this.todoStore.getOne(id)
     }
     
     getTodos() {
-        this.todoStore.getItems();
+        this.todoStore.getAll();
     }
 
     updateTodo(todo: Todo) {

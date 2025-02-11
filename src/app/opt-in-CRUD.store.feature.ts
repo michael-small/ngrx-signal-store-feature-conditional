@@ -22,8 +22,8 @@ export type BaseState<Entity> = {
 
 // Feature users can pick and choose what to enable
 type CrudConfig = {
-  add: boolean;
-  load: boolean;
+  create: boolean;
+  read: boolean;
   delete: boolean;
   update: boolean;
 };
@@ -34,27 +34,27 @@ type CrudConfig = {
 //     assumption that the `CrudConfig` is valid to what the 
 //     implementing service offers.
 export interface CrudService<T> {
-  getItems(): Observable<T[]>;
+  create(value: T): Observable<T>;
 
-  getItem(id: number): Observable<T>;
+  getOne(id: number): Observable<T>;
 
-  addItem(value: T): Observable<T>;
+  getAll(): Observable<T[]>;
 
-  updateItem(value: T): Observable<T>;
+  update(value: T): Observable<T>;
 
-  deleteItem(value: T): Observable<any>;
+  delete(value: T): Observable<any>;
 }
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<
   Config extends CrudConfig,
   Entity extends BaseEntity
-> = (Config['add'] extends true ? { add: (value: Entity) => void } : {}) &
-  (Config['load'] extends true
-    ? { getItem: (id: number) => void; getItems: () => void }
+> = (Config['create'] extends true ? { create: (value: Entity) => void } : {}) &
+  (Config['read'] extends true
+    ? { getOne: (id: number) => void; getAll: () => void }
     : {}) &
-  (Config['delete'] extends true ? { remove: (value: Entity) => void } : {}) &
-  (Config['update'] extends true ? { update: (value: Entity) => void } : {});
+  (Config['update'] extends true ? { update: (value: Entity) => void } : {}) &
+  (Config['delete'] extends true ? { delete: (value: Entity) => void } : {});
 
 export function withCrudOperations<
   Config extends CrudConfig,
@@ -68,13 +68,13 @@ export function withCrudOperations<
       const service = inject(DataService);
       const methods: Record<string, Function> = {};
 
-      if (config.add) {
-        const add = rxMethod<Entity>(
+      if (config.create) {
+        const create = rxMethod<Entity>(
           pipe(
             switchMap((value) => {
               patchState(store, { loading: true });
 
-              return service.addItem!(value).pipe(
+              return service.create!(value).pipe(
                 tapResponse({
                   next: (addedItem) => {
                     patchState(store, {
@@ -88,7 +88,7 @@ export function withCrudOperations<
             })
           ),
         );
-        methods['add'] = (value: Entity) => add(value);
+        methods['create'] = (value: Entity) => create(value);
       }
 
       if (config.delete) {
@@ -98,7 +98,7 @@ export function withCrudOperations<
                 switchMap((item) => {
                     patchState(store, { loading: true });
 
-                    return service.deleteItem!(item).pipe(
+                    return service.delete!(item).pipe(
                         tapResponse({
                             next: () => {
                                 patchState(store, {
@@ -112,16 +112,16 @@ export function withCrudOperations<
                 })
             )
         )
-        methods['remove'] = (value: Entity) => d3lete(value);
+        methods['delete'] = (value: Entity) => d3lete(value);
       }
 
-      if (config.load) {
-        const loadAll = rxMethod<void>(
+      if (config.read) {
+        const getAll = rxMethod<void>(
             pipe(
                 switchMap(() => {
                     patchState(store, { loading: true });
 
-                    return service.getItems!().pipe(
+                    return service.getAll!().pipe(
                         tapResponse({
                             next: (items) => {
                                 patchState(store, {
@@ -135,12 +135,12 @@ export function withCrudOperations<
                 })
             )
         )
-        const load = rxMethod<number>(
+        const getOne = rxMethod<number>(
             pipe(
                 switchMap((id) => {
                     patchState(store, { loading: true });
 
-                    return service.getItem!(id).pipe(
+                    return service.getOne!(id).pipe(
                         tapResponse({
                             next: (item) => {
                                 patchState(store, {
@@ -154,8 +154,8 @@ export function withCrudOperations<
                 })
             )
         )
-        methods['getItem'] = (value: Entity['id']) => load(value);
-        methods['getItems'] = () => loadAll();
+        methods['getOne'] = (value: Entity['id']) => getOne(value);
+        methods['getAll'] = () => getAll();
       }
 
       if (config.update) {
@@ -164,7 +164,7 @@ export function withCrudOperations<
               switchMap((item) => {
                 patchState(store, { loading: true });
   
-                return service.updateItem!(item).pipe(
+                return service.update!(item).pipe(
                   tapResponse({
                     next: (updatedItem) => {
                       const allItems = [...store.items()];
