@@ -10,6 +10,11 @@ import {
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
+// The general structure/implementation of the service + CRUD methods for this example were started on top of
+// - This article's example: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
+// - And the ngrx-toolkit's `withDataService()` approach: https://ngrx-toolkit.angulararchitects.io/docs/with-data-service
+// and then expanded on to make these opt-in / conditional features
+
 // Gaurantees minimum identifier + type
 export type BaseEntity = { id: number };
 
