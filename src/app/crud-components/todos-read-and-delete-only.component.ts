@@ -25,6 +25,7 @@ export const TodoReadAndDeleteOnlyStore = signalStore(
             <button (click)="removeTodo(todo)">x</button>
         </div>
     }
+    <br />
     <button (click)="getTodo(1)">Get TODO #1</button>
     @if (todoStore.selectedItem()) {
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>

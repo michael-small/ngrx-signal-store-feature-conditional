@@ -26,6 +26,7 @@ export const TodoAllCRUDStore = signalStore(
             <button (click)="updateTodo(todo)">Flip completed state</button>
         </div>
     }
+    <br />
     <button (click)="addTodos()">Add TODOs</button>
     <button (click)="getTodo(1)">Get TODO #1</button>
     @if (todoStore.selectedItem()) {
