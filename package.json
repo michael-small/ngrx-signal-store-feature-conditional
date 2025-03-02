@@ -10,6 +10,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular-architects/ngrx-toolkit": "^19.1.0",
     "@angular/animations": "^19.1.5",
     "@angular/common": "^19.1.5",
     "@angular/compiler": "^19.1.5",

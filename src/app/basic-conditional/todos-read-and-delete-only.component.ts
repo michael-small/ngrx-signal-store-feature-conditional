@@ -1,7 +1,7 @@
 import { Component, inject, Injectable, signal } from '@angular/core';
 import { initialState, Todo } from '../todo.service';
 import { JsonPipe } from '@angular/common';
-import { CrudService, withCrudConditional } from '../opt-in-CRUD.store.feature';
+import { CrudService, withCrudConditional } from './basic-conditional.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
 import { map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';

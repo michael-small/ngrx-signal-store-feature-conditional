@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { BaseEntity, BaseState, CrudService } from './opt-in-CRUD.store.feature';
+import { BaseEntity, BaseState, CrudService } from './basic-conditional/basic-conditional.store.feature';
 
 export interface TodoState extends BaseState<Todo> { }
 

@@ -1,11 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TodosAllCRUDComponent } from './basic-conditional/todos-all-crud.component';
 import { TodosReadOnlyComponent } from './basic-conditional/todos-read-only.component';
 import { TodosReadAndDeleteOnlyComponent } from './basic-conditional/todos-read-and-delete-only.component';
+import { TodosReadOnlyMapComponent } from "./conditional-map-methods/todos-read-only.component";
+import { TodosAllCrudMapComponent } from "./conditional-map-methods/todos-all-crud.component";
+import { TodosReadAndDeleteOnlyMapComponent } from "./conditional-map-methods/todos-read-and-delete-only.component";
 
 @Component({
   selector: 'app-root',
-  imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent],
+  imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent, TodosReadOnlyMapComponent, TodosAllCrudMapComponent, TodosReadAndDeleteOnlyMapComponent],
   template: `
     <h1>Opt-in Signal Store Features with CRUD Example</h1>
     <p>
@@ -14,14 +17,30 @@ import { TodosReadAndDeleteOnlyComponent } from './basic-conditional/todos-read-
         to allow the end-user to pick and choose methods that the store offers.
     </p>
 
-    <h2>All CRUD</h2>
-    <app-todos-all-crud />
+    @if (type() === 'basic') {
+        <button (click)="type.set('mapping')">Show Mapping Based</button>
+        <h2>All CRUD</h2>
+        <app-todos-all-crud />
 
-    <h2>READ only</h2>
-    <app-todos-read-only />
+        <h2>READ only</h2>
+        <app-todos-read-only />
 
-    <h2>READ and DELETE only</h2>
-    <app-todos-read-and-delete-only />
+        <h2>READ and DELETE only</h2>
+        <app-todos-read-and-delete-only />
+    } @else {
+        <button (click)="type.set('basic')">Show Basic Based</button>
+
+        <h2>All CRUD</h2>
+        <app-todos-all-crud-mapping />
+
+        <h2>READ only</h2>
+        <app-todos-read-only-mapping />
+
+        <h2>READ and DELETE only</h2>
+        <app-todos-read-and-delete-only-mapping />
+    }
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+    type = signal<'basic' | 'mapping'>('basic')
+}
