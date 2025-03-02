@@ -1,13 +1,39 @@
-import { Component, inject, signal } from '@angular/core';
-import { initialState, Todo, TodoReadAndDeleteOnlyService } from '../todo.service';
+import { Component, inject, Injectable, signal } from '@angular/core';
+import { initialState, Todo } from '../todo.service';
 import { JsonPipe } from '@angular/common';
-import { withCrudOperations } from '../opt-in-CRUD.store.feature';
+import { CrudService, withCrudConditional } from '../opt-in-CRUD.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
+import { map, Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
+// Corresponds to `todos-read-and-delete-only` component
+@Injectable({
+    providedIn: 'root',
+  })
+  export class TodoReadAndDeleteOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne' | 'delete'> {
+    private readonly http = inject(HttpClient);
+  
+    private url = `https://jsonplaceholder.typicode.com/todos`;
+  
+    getOne(id: number) {
+      return this.http.get<Todo>(`${this.url}/${id}`);
+    }
+  
+    getAll(): Observable<Todo[]> {
+      return this.http.get<Todo[]>(this.url).pipe(
+          map(todos => todos.filter(td => td.id < 3))
+      );
+    }
+
+    delete(value: Todo) {
+        return this.http.delete(`${this.url}/${value.id}`);
+      }
+  }
 
 export const TodoReadAndDeleteOnlyStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withCrudOperations(TodoReadAndDeleteOnlyService, {
+  withCrudConditional(TodoReadAndDeleteOnlyService, {
     create: false,
     read: true,
     update: false,

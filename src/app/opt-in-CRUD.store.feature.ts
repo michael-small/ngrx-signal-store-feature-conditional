@@ -61,7 +61,7 @@ type CrudMethods<
   (Config['update'] extends true ? { update: (value: Entity) => void } : {}) &
   (Config['delete'] extends true ? { delete: (value: Entity) => void } : {});
 
-export function withCrudOperations<
+export function withCrudConditional<
   Config extends CrudConfig,
   Entity extends BaseEntity
 >(DataService: Type<Partial<CrudService<Entity>>>, config: Config) {

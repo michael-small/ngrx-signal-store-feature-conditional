@@ -1,13 +1,35 @@
-import { Component, inject, signal } from '@angular/core';
-import { initialState, Todo, TodoReadOnlyService } from '../todo.service';
+import { Component, inject, Injectable, signal } from '@angular/core';
+import { initialState, Todo } from '../todo.service';
 import { JsonPipe } from '@angular/common';
-import { withCrudOperations } from '../opt-in-CRUD.store.feature';
+import { CrudService, withCrudConditional } from '../opt-in-CRUD.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
+
+// Corresponds to `todos-read-only` component
+@Injectable({
+    providedIn: 'root',
+  })
+  export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne'> {
+    private readonly http = inject(HttpClient);
+  
+    private url = `https://jsonplaceholder.typicode.com/todos`;
+  
+    getOne(id: number) {
+      return this.http.get<Todo>(`${this.url}/${id}`);
+    }
+  
+    getAll(): Observable<Todo[]> {
+      return this.http.get<Todo[]>(this.url).pipe(
+          map(todos => todos.filter(td => td.id < 3))
+      );
+    }
+  }
 
 export const TodoReadOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
-    withCrudOperations(TodoReadOnlyService, {
+    withCrudConditional(TodoReadOnlyService, {
       create: false,
       read: true,
       update: false,

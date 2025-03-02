@@ -1,13 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { initialState, Todo, TodoAllCRUDService } from '../todo.service';
 import { JsonPipe } from '@angular/common';
-import { withCrudOperations } from '../opt-in-CRUD.store.feature';
+import { withCrudConditional } from '../opt-in-CRUD.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
 
 export const TodoAllCRUDStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
-  withCrudOperations(TodoAllCRUDService, {
+  withCrudConditional(TodoAllCRUDService, {
     create: true,
     read: true,
     update: true,
