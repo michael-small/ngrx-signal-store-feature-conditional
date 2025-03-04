@@ -8,7 +8,7 @@ import { TodosReadAndDeleteOnlyMapComponent } from "./conditional-map-methods/to
 
 @Component({
   selector: 'app-root',
-  imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent, TodosReadOnlyMapComponent, TodosAllCrudMapComponent, TodosReadAndDeleteOnlyMapComponent],
+  imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent, TodosReadOnlyMapComponent, TodosAllCrudMapComponent, TodosReadAndDeleteOnlyComponent, TodosReadAndDeleteOnlyMapComponent],
   template: `
     <h1>Opt-in Signal Store Features with CRUD Example</h1>
     <p>
