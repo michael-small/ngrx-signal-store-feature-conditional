@@ -1,4 +1,4 @@
-import { Component, inject, Injectable, signal } from '@angular/core';
+import { Component, inject, Injectable } from '@angular/core';
 import { initialState, Todo } from '../todo.service';
 import { JsonPipe } from '@angular/common';
 import { CrudService, withCrudConditional } from './basic-conditional.store.feature';
@@ -30,7 +30,7 @@ export class TodoReadAndDeleteOnlyService implements Pick<CrudService<Todo>, 'ge
     }
 }
 
-export const TodoReadAndDeleteOnlyStore = signalStore(
+const TodoReadAndDeleteOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
     withCrudConditional(TodoReadAndDeleteOnlyService, {
@@ -45,18 +45,18 @@ export const TodoReadAndDeleteOnlyStore = signalStore(
     selector: 'app-todos-read-and-delete-basic',
     imports: [JsonPipe],
     template: `
-    @for (todo of todos(); track $index) {
-        <div>
-            <pre>{{todo | json}}</pre>
-            <button (click)="removeTodo(todo)">x</button>
-        </div>
-    }
-    <br />
-    <button (click)="getTodo(1)">Get TODO #1</button>
-    @if (todoStore.selectedItem()) {
-        <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
-    }
-  `,
+        @for (todo of todos(); track $index) {
+            <div>
+                <pre>{{todo | json}}</pre>
+                <button (click)="removeTodo(todo)">x</button>
+            </div>
+        }
+        <br />
+        <button (click)="getTodo(1)">Get TODO #1</button>
+        @if (todoStore.selectedItem()) {
+            <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+        }
+    `,
     providers: [TodoReadAndDeleteOnlyStore]
 })
 export class TodosReadAndDeleteOnlyComponent {

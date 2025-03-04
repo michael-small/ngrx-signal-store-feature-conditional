@@ -1,4 +1,4 @@
-import { Component, inject, Injectable, signal } from '@angular/core';
+import { Component, inject, Injectable } from '@angular/core';
 import { initialState, Todo } from '../todo.service';
 import { JsonPipe } from '@angular/common';
 import { CrudService, withCrudConditional } from './basic-conditional.store.feature';
@@ -26,8 +26,7 @@ export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getAll' | '
     }
 }
 
-export const TodoReadOnlyStore = signalStore(
-    { providedIn: 'root' },
+const TodoReadOnlyStore = signalStore(
     withState(initialState),
     withCrudConditional(TodoReadOnlyService, {
         create: false,
@@ -41,17 +40,17 @@ export const TodoReadOnlyStore = signalStore(
     selector: 'app-todos-read-basic',
     imports: [JsonPipe],
     template: `
-    @for (todo of todos(); track $index) {
-        <div>
-            <pre>{{todo | json}}</pre>
-        </div>
-    }
-    <br />
-    <button (click)="getTodo(1)">Get TODO #1</button>
-    @if (todoStore.selectedItem()) {
-        <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
-    }
-  `,
+        @for (todo of todos(); track $index) {
+            <div>
+                <pre>{{todo | json}}</pre>
+            </div>
+        }
+        <br />
+        <button (click)="getTodo(1)">Get TODO #1</button>
+        @if (todoStore.selectedItem()) {
+            <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+        }
+    `,
     providers: [TodoReadOnlyStore]
 })
 export class TodosReadOnlyComponent {

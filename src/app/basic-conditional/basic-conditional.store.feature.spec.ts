@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { initialState, Todo } from '../todo.service';
-import { map, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { CrudService, withCrudConditional } from './basic-conditional.store.feature';
 import { signalStore, withHooks, withState } from '@ngrx/signals';
 

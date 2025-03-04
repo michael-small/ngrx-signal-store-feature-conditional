@@ -1,5 +1,5 @@
 import { Observable, pipe, switchMap } from 'rxjs';
-import { computed, inject, Type } from '@angular/core';
+import { computed } from '@angular/core';
 import {
     patchState,
     signalStoreFeature,
@@ -9,7 +9,6 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-import { CrudService } from '../basic-conditional/basic-conditional.store.feature';
 
 // The general structure/implementation of the service + CRUD methods for this example were started on top of
 // - This article's example: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
@@ -51,7 +50,7 @@ type CrudMethods<
     (Config['update'] extends MethodUpdate<Entity> ? { update: (value: Entity) => void } : {}) &
     (Config['delete'] extends MethodDelete<Entity> ? { delete: (value: Entity) => void } : {});
 
-export function withCrudOperations<
+export function withCrudMappings<
     Config extends CrudConfig<Entity>,
     Entity extends BaseEntity
 >(config: Config) {

@@ -1,10 +1,9 @@
 import { Component, inject, Injectable, signal } from '@angular/core';
-import { map, Observable, of } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { initialState, Todo } from '../todo.service';
-import { CrudService } from '../basic-conditional/basic-conditional.store.feature';
 import { HttpClient } from '@angular/common/http';
-import { signalStore, withMethods, withProps, withState } from '@ngrx/signals';
-import { withCrudOperations } from './conditional-map-methods.store.feature';
+import { signalStore, withProps, withState } from '@ngrx/signals';
+import { withCrudMappings } from './conditional-map-methods.store.feature';
 import { withFeatureFactory } from '@angular-architects/ngrx-toolkit';
 import { JsonPipe } from '@angular/common';
 
@@ -39,12 +38,11 @@ export class TodoAllCRUDMappingService {
     }
 }
 
-export const TodoAllCRUDStore = signalStore(
-    { providedIn: 'root' },
+const TodoAllCRUDStore = signalStore(
     withState(initialState),
     withProps(() => ({ serv: inject(TodoAllCRUDMappingService) })),
     withFeatureFactory((store) =>
-        withCrudOperations({
+        withCrudMappings({
             read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOneDifferentName(value)) },
             create: { method: ((value: Todo) => store.serv.createDifferent(value)) },
             update: { method: ((value: Todo) => store.serv.updateDifferent(value)) },
@@ -57,21 +55,21 @@ export const TodoAllCRUDStore = signalStore(
     selector: 'app-todos-all-crud-mapping',
     imports: [JsonPipe],
     template: `
-    @for (todo of todos(); track $index) {
-        <div>
-            <pre>{{todo | json}}</pre>
-            <button (click)="removeTodo(todo)">x</button>
-            <button (click)="updateTodo(todo)">Flip completed state</button>
-        </div>
-    }
-    <br />
-    <button (click)="addTodos()">Add TODOs</button>
-    <button (click)="getTodo(1)">Get TODO #1</button>
-    @if (todoStore.selectedItem()) {
-        <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
-    }
-  `,
-    styles: ``
+        @for (todo of todos(); track $index) {
+            <div>
+                <pre>{{todo | json}}</pre>
+                <button (click)="removeTodo(todo)">x</button>
+                <button (click)="updateTodo(todo)">Flip completed state</button>
+            </div>
+        }
+        <br />
+        <button (click)="addTodos()">Add TODOs</button>
+        <button (click)="getTodo(1)">Get TODO #1</button>
+        @if (todoStore.selectedItem()) {
+            <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+        }
+    `,
+    providers: [TodoAllCRUDStore]
 })
 export class TodosAllCrudMapComponent {
     todoStore = inject(TodoAllCRUDStore);

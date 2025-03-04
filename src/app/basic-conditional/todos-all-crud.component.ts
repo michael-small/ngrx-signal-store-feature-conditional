@@ -4,8 +4,7 @@ import { JsonPipe } from '@angular/common';
 import { withCrudConditional } from './basic-conditional.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
 
-export const TodoAllCRUDStore = signalStore(
-    { providedIn: 'root' },
+const TodoAllCRUDStore = signalStore(
     withState(initialState),
     withCrudConditional(TodoAllCRUDService, {
         create: true,
@@ -19,20 +18,20 @@ export const TodoAllCRUDStore = signalStore(
     selector: 'app-todos-all-crud-basic',
     imports: [JsonPipe],
     template: `
-    @for (todo of todos(); track $index) {
-        <div>
-            <pre>{{todo | json}}</pre>
-            <button (click)="removeTodo(todo)">x</button>
-            <button (click)="updateTodo(todo)">Flip completed state</button>
-        </div>
-    }
-    <br />
-    <button (click)="addTodos()">Add TODOs</button>
-    <button (click)="getTodo(1)">Get TODO #1</button>
-    @if (todoStore.selectedItem()) {
-        <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
-    }
-  `,
+        @for (todo of todos(); track $index) {
+            <div>
+                <pre>{{todo | json}}</pre>
+                <button (click)="removeTodo(todo)">x</button>
+                <button (click)="updateTodo(todo)">Flip completed state</button>
+            </div>
+        }
+        <br />
+        <button (click)="addTodos()">Add TODOs</button>
+        <button (click)="getTodo(1)">Get TODO #1</button>
+        @if (todoStore.selectedItem()) {
+            <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+        }
+    `,
     providers: [TodoAllCRUDStore]
 })
 export class TodosAllCRUDComponent {
