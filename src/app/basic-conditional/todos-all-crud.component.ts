@@ -5,20 +5,20 @@ import { withCrudConditional } from './basic-conditional.store.feature';
 import { signalStore, withState } from '@ngrx/signals';
 
 export const TodoAllCRUDStore = signalStore(
-  { providedIn: 'root' },
-  withState(initialState),
-  withCrudConditional(TodoAllCRUDService, {
-    create: true,
-    read: true,
-    update: true,
-    delete: true,
-  })
+    { providedIn: 'root' },
+    withState(initialState),
+    withCrudConditional(TodoAllCRUDService, {
+        create: true,
+        read: true,
+        update: true,
+        delete: true,
+    })
 );
 
 @Component({
-  selector: 'app-todos-all-crud-basic',
-  imports: [JsonPipe],
-  template: `
+    selector: 'app-todos-all-crud-basic',
+    imports: [JsonPipe],
+    template: `
     @for (todo of todos(); track $index) {
         <div>
             <pre>{{todo | json}}</pre>
@@ -33,7 +33,7 @@ export const TodoAllCRUDStore = signalStore(
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
   `,
-  providers: [TodoAllCRUDStore]
+    providers: [TodoAllCRUDStore]
 })
 export class TodosAllCRUDComponent {
     todoStore = inject(TodoAllCRUDStore);
@@ -43,7 +43,7 @@ export class TodosAllCRUDComponent {
     defaultId = signal(0);
 
     addTodos() {
-        this.todoStore.create({id: this.defaultId(), completed: false, title: 'test', userId: 1})
+        this.todoStore.create({ id: this.defaultId(), completed: false, title: 'test', userId: 1 })
         this.defaultId.set(this.defaultId() + 1)
     }
 
@@ -54,14 +54,14 @@ export class TodosAllCRUDComponent {
     getTodo(id: Todo['id']) {
         this.todoStore.getOne(id)
     }
-    
+
     getTodos() {
         this.todoStore.getAll();
     }
 
     updateTodo(todo: Todo) {
         const _todo = todo;
-        this.todoStore.update({..._todo, completed: !_todo.completed});
+        this.todoStore.update({ ..._todo, completed: !_todo.completed });
     }
 
     ngOnInit() {

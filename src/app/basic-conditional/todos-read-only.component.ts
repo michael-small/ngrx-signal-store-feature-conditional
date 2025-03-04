@@ -9,38 +9,38 @@ import { map, Observable } from 'rxjs';
 // Corresponds to `todos-read-only` component
 @Injectable({
     providedIn: 'root',
-  })
-  export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne'> {
+})
+export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getAll' | 'getOne'> {
     private readonly http = inject(HttpClient);
-  
+
     private url = `https://jsonplaceholder.typicode.com/todos`;
-  
+
     getOne(id: number) {
-      return this.http.get<Todo>(`${this.url}/${id}`);
+        return this.http.get<Todo>(`${this.url}/${id}`);
     }
-  
+
     getAll(): Observable<Todo[]> {
-      return this.http.get<Todo[]>(this.url).pipe(
-          map(todos => todos.filter(td => td.id < 3))
-      );
+        return this.http.get<Todo[]>(this.url).pipe(
+            map(todos => todos.filter(td => td.id < 3))
+        );
     }
-  }
+}
 
 export const TodoReadOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
     withCrudConditional(TodoReadOnlyService, {
-      create: false,
-      read: true,
-      update: false,
-      delete: false,
+        create: false,
+        read: true,
+        update: false,
+        delete: false,
     })
-  );
+);
 
 @Component({
-  selector: 'app-todos-read-basic',
-  imports: [JsonPipe],
-  template: `
+    selector: 'app-todos-read-basic',
+    imports: [JsonPipe],
+    template: `
     @for (todo of todos(); track $index) {
         <div>
             <pre>{{todo | json}}</pre>
@@ -52,7 +52,7 @@ export const TodoReadOnlyStore = signalStore(
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
   `,
-  providers: [TodoReadOnlyStore]
+    providers: [TodoReadOnlyStore]
 })
 export class TodosReadOnlyComponent {
     todoStore = inject(TodoReadOnlyStore);
@@ -62,7 +62,7 @@ export class TodosReadOnlyComponent {
     getTodo(id: Todo['id']) {
         this.todoStore.getOne(id)
     }
-    
+
     getTodos() {
         this.todoStore.getAll();
     }

@@ -10,42 +10,42 @@ import { JsonPipe } from '@angular/common';
 
 @Injectable({
     providedIn: 'root',
-  })
-  export class TodoReadMappingService {
+})
+export class TodoReadMappingService {
     private readonly http = inject(HttpClient);
-  
+
     private url = `https://jsonplaceholder.typicode.com/todos`;
-  
+
     getOne(id: number) {
-      return this.http.get<Todo>(`${this.url}/${id}`);
+        return this.http.get<Todo>(`${this.url}/${id}`);
     }
-  
+
     // For todo read only passing methods feature
     getAllDifferentName(): Observable<Todo[]> {
-      return this.http
-        .get<Todo[]>(this.url)
-        .pipe(map((todos) => todos.filter((td) => td.id < 3)));
+        return this.http
+            .get<Todo[]>(this.url)
+            .pipe(map((todos) => todos.filter((td) => td.id < 3)));
     }
-  }
+}
 
-  export const TodoReadOnlyStore = signalStore(
+export const TodoReadOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
     withProps(() => ({ serv: inject(TodoReadMappingService) })),
     withFeatureFactory((store) =>
-      withCrudOperations({
-        read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOne(value)) },
-        create: false,
-        update: false,
-        delete: false
-      })
+        withCrudOperations({
+            read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOne(value)) },
+            create: false,
+            update: false,
+            delete: false
+        })
     )
-  );
-  
+);
+
 @Component({
-  selector: 'app-todos-read-mapping',
-  imports: [JsonPipe],
-  template: `
+    selector: 'app-todos-read-mapping',
+    imports: [JsonPipe],
+    template: `
     @for (todo of todos(); track $index) {
         <div>
             <pre>{{todo | json}}</pre>
@@ -57,7 +57,7 @@ import { JsonPipe } from '@angular/common';
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
   `,
-  providers: [TodoReadOnlyStore],
+    providers: [TodoReadOnlyStore],
 })
 export class TodosReadOnlyMapComponent {
     todoStore = inject(TodoReadOnlyStore);
@@ -67,7 +67,7 @@ export class TodosReadOnlyMapComponent {
     getTodo(id: Todo['id']) {
         this.todoStore.getOne(id)
     }
-    
+
     getTodos() {
         this.todoStore.getAll();
     }

@@ -7,9 +7,9 @@ import { TodosAllCrudMapComponent } from "./conditional-map-methods/todos-all-cr
 import { TodosReadAndDeleteOnlyMapComponent } from "./conditional-map-methods/todos-read-and-delete-only.component";
 
 @Component({
-  selector: 'app-root',
-  imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent, TodosReadOnlyMapComponent, TodosAllCrudMapComponent, TodosReadAndDeleteOnlyComponent, TodosReadAndDeleteOnlyMapComponent],
-  template: `
+    selector: 'app-root',
+    imports: [TodosAllCRUDComponent, TodosReadOnlyComponent, TodosReadAndDeleteOnlyComponent, TodosReadOnlyMapComponent, TodosAllCrudMapComponent, TodosReadAndDeleteOnlyComponent, TodosReadAndDeleteOnlyMapComponent],
+    template: `
     <h1>Opt-in Signal Store Features with CRUD Example</h1>
     <p>
         CRUD (Create, Read, Update, Delete) services offer various combinations of features to turn on and off.
