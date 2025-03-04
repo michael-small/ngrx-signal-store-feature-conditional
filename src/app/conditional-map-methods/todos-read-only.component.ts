@@ -8,11 +8,10 @@ import { withCrudOperations } from './conditional-map-methods.store.feature';
 import { withFeatureFactory } from '@angular-architects/ngrx-toolkit';
 import { JsonPipe } from '@angular/common';
 
-// Corresponds to `todos-read-only` component
 @Injectable({
     providedIn: 'root',
   })
-  export class TodoReadOnlyService implements Pick<CrudService<Todo>, 'getOne'> {
+  export class TodoReadMappingService {
     private readonly http = inject(HttpClient);
   
     private url = `https://jsonplaceholder.typicode.com/todos`;
@@ -21,39 +20,21 @@ import { JsonPipe } from '@angular/common';
       return this.http.get<Todo>(`${this.url}/${id}`);
     }
   
-    getAll(): Observable<Todo[]> {
-      return this.http
-        .get<Todo[]>(this.url)
-        .pipe(map((todos) => todos.filter((td) => td.id < 3)));
-    }
-  
     // For todo read only passing methods feature
     getAllDifferentName(): Observable<Todo[]> {
       return this.http
         .get<Todo[]>(this.url)
         .pipe(map((todos) => todos.filter((td) => td.id < 3)));
     }
-
-        createDifferent(value: Todo) {
-        return this.http.post<Todo>(this.url, { value });
-      }
-
-      updateDifferent(value: Todo) {
-        return this.http.put<Todo>(`${this.url}/${value.id}`, value);
-      }
-    
-      deleteDifferent(value: Todo) {
-        return this.http.delete<Todo>(`${this.url}/${value.id}`);
-      }
   }
 
   export const TodoReadOnlyStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
-    withProps(() => ({ serv: inject(TodoReadOnlyService) })),
+    withProps(() => ({ serv: inject(TodoReadMappingService) })),
     withFeatureFactory((store) =>
       withCrudOperations({
-        read: { method: store.serv.getAllDifferentName() },
+        read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOne(value)) },
         create: false,
         update: false,
         delete: false
@@ -62,7 +43,7 @@ import { JsonPipe } from '@angular/common';
   );
   
 @Component({
-  selector: 'app-todos-read-only-mapping',
+  selector: 'app-todos-read-mapping',
   imports: [JsonPipe],
   template: `
     @for (todo of todos(); track $index) {
@@ -71,7 +52,7 @@ import { JsonPipe } from '@angular/common';
         </div>
     }
     <br />
-    <!-- <button (click)="getTodo(1)">Get TODO #1</button> -->
+    <button (click)="getTodo(1)">Get TODO #1</button>
     @if (todoStore.selectedItem()) {
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
@@ -83,9 +64,9 @@ export class TodosReadOnlyMapComponent {
 
     todos = this.todoStore.items;
 
-    // getTodo(id: Todo['id']) {
-    //     this.todoStore.getOne(id)
-    // }
+    getTodo(id: Todo['id']) {
+        this.todoStore.getOne(id)
+    }
     
     getTodos() {
         this.todoStore.getAll();

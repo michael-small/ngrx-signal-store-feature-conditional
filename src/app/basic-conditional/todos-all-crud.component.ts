@@ -16,7 +16,7 @@ export const TodoAllCRUDStore = signalStore(
 );
 
 @Component({
-  selector: 'app-todos-all-crud',
+  selector: 'app-todos-all-crud-basic',
   imports: [JsonPipe],
   template: `
     @for (todo of todos(); track $index) {

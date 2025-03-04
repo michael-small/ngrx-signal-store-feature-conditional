@@ -38,7 +38,7 @@ export const TodoReadOnlyStore = signalStore(
   );
 
 @Component({
-  selector: 'app-todos-read-only',
+  selector: 'app-todos-read-basic',
   imports: [JsonPipe],
   template: `
     @for (todo of todos(); track $index) {

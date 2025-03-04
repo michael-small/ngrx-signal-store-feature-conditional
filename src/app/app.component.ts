@@ -20,13 +20,13 @@ import { TodosReadAndDeleteOnlyMapComponent } from "./conditional-map-methods/to
     @if (type() === 'basic') {
         <button (click)="type.set('mapping')">Show Mapping Based</button>
         <h2>All CRUD</h2>
-        <app-todos-all-crud />
+        <app-todos-all-crud-basic />
 
         <h2>READ only</h2>
-        <app-todos-read-only />
+        <app-todos-read-basic />
 
         <h2>READ and DELETE only</h2>
-        <app-todos-read-and-delete-only />
+        <app-todos-read-and-delete-basic />
     } @else {
         <button (click)="type.set('basic')">Show Basic Based</button>
 
@@ -34,10 +34,10 @@ import { TodosReadAndDeleteOnlyMapComponent } from "./conditional-map-methods/to
         <app-todos-all-crud-mapping />
 
         <h2>READ only</h2>
-        <app-todos-read-only-mapping />
+        <app-todos-read-mapping />
 
         <h2>READ and DELETE only</h2>
-        <app-todos-read-and-delete-only-mapping />
+        <app-todos-read-and-delete-mapping />
     }
   `,
 })

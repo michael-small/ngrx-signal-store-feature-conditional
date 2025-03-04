@@ -42,7 +42,7 @@ export const TodoReadAndDeleteOnlyStore = signalStore(
 );
 
 @Component({
-  selector: 'app-todos-read-and-delete-only',
+  selector: 'app-todos-read-and-delete-basic',
   imports: [JsonPipe],
   template: `
     @for (todo of todos(); track $index) {

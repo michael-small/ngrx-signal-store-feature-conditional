@@ -8,26 +8,18 @@ import { withCrudOperations } from './conditional-map-methods.store.feature';
 import { withFeatureFactory } from '@angular-architects/ngrx-toolkit';
 import { JsonPipe } from '@angular/common';
 
-// Corresponds to `todos-read-only` component
 @Injectable({
     providedIn: 'root',
   })
-  export class TodoAllCrudService implements Pick<CrudService<Todo>, 'getOne'> {
+  export class TodoAllCRUDMappingService {
     private readonly http = inject(HttpClient);
   
     private url = `https://jsonplaceholder.typicode.com/todos`;
   
-    getOne(id: number) {
+    getOneDifferentName(id: number) {
       return this.http.get<Todo>(`${this.url}/${id}`);
     }
   
-    getAll(): Observable<Todo[]> {
-      return this.http
-        .get<Todo[]>(this.url)
-        .pipe(map((todos) => todos.filter((td) => td.id < 3)));
-    }
-  
-    // For todo read only passing methods feature
     getAllDifferentName(): Observable<Todo[]> {
       return this.http
         .get<Todo[]>(this.url)
@@ -50,10 +42,10 @@ import { JsonPipe } from '@angular/common';
   export const TodoAllCRUDStore = signalStore(
     { providedIn: 'root' },
     withState(initialState),
-    withProps(() => ({ serv: inject(TodoAllCrudService) })),
+    withProps(() => ({ serv: inject(TodoAllCRUDMappingService) })),
     withFeatureFactory((store) =>
       withCrudOperations({
-        read: { method: store.serv.getAllDifferentName() },
+        read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOneDifferentName(value)) },
         create: { method: ((value: Todo) => store.serv.createDifferent(value)) },
         update: {method: ((value: Todo) => store.serv.updateDifferent(value))},
         delete: {method: ((value: Todo) => store.serv.deleteDifferent(value))}
@@ -74,7 +66,7 @@ import { JsonPipe } from '@angular/common';
     }
     <br />
     <button (click)="addTodos()">Add TODOs</button>
-    <!-- <button (click)="getTodo(1)">Get TODO #1</button> -->
+    <button (click)="getTodo(1)">Get TODO #1</button>
     @if (todoStore.selectedItem()) {
         <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
     }
@@ -97,9 +89,9 @@ export class TodosAllCrudMapComponent {
         this.todoStore.delete(todo)
     }
 
-    // getTodo(id: Todo['id']) {
-    //     this.todoStore.getOne(id)
-    // }
+    getTodo(id: Todo['id']) {
+        this.todoStore.getOne(id)
+    }
     
     getTodos() {
         this.todoStore.getAll();

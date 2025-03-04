@@ -31,13 +31,13 @@ export type BaseState<Entity> = {
 // This shape is obtuse but for a proof of concept whatever. Should just be able in theory to
 //     do `read: true` OR `read: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
 type CrudConfig<T> = {
-  read: { method: Observable<T[]> } | false
+  read: { methodGetAll: Observable<T[]>, methodGetOne: (id: number) => Observable<T> } | false
   create: { method: (entity: T) => Observable<T> } | false
   update: { method: (entity: T) => Observable<T> } | false
   delete: { method: (entity: T) => Observable<T> } | false
 };
 
-type Method<T> = { method: Observable<T[]>};
+type Method<T> = { methodGetAll: Observable<T[]>, methodGetOne: (id: number) => Observable<T>};
 type MethodCreate<T> = { method: (entity: T) => Observable<T>};
 type MethodUpdate<T> = { method: (entity: T) => Observable<T>};
 type MethodDelete<T> = { method: (entity: T) => Observable<T>};
@@ -46,7 +46,7 @@ type MethodDelete<T> = { method: (entity: T) => Observable<T>};
 type CrudMethods<
   Config extends CrudConfig<Entity>,
   Entity extends BaseEntity
-> = (Config['read'] extends Method<Entity> ? { getAll: () => void } : {}) &
+> = (Config['read'] extends Method<Entity> ? { getAll: () => void, getOne: (id: number) => void } : {}) &
   (Config['create'] extends MethodCreate<Entity> ? { create: (value: Entity) => void } : {}) &
   (Config['update'] extends MethodUpdate<Entity> ? { update: (value: Entity) => void } : {}) &
   (Config['delete'] extends MethodDelete<Entity> ? { delete: (value: Entity) => void } : {});
@@ -69,7 +69,7 @@ export function withCrudOperations<
             switchMap(() => {
               patchState(store, { loading: true });
 
-              return configRead.method.pipe(
+              return configRead.methodGetAll.pipe(
                 tapResponse({
                   next: (items) => {
                     patchState(store, {
@@ -83,6 +83,25 @@ export function withCrudOperations<
             })
           )
         );
+        const getOne = rxMethod<number>(
+            switchMap((id) => {
+                patchState(store, { loading: true });
+
+                return configRead.methodGetOne!(id).pipe(
+                    tapResponse({
+                        next: (item) => {
+                            patchState(store, {
+                                selectedItem: item,
+                            });
+                        },
+                        error: console.error,
+                        finalize: () => patchState(store, { loading: false }),
+                    })
+                )
+            })
+        )
+
+        methods['getOne'] = (value: Entity['id']) => getOne(value);
         methods['getAll'] = () => getAll();
       }
 
