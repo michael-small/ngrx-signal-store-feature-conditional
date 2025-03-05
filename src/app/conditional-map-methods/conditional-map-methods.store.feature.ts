@@ -30,25 +30,25 @@ export type BaseState<Entity> = {
 // This shape is obtuse but for a proof of concept whatever. Should just be able in theory to
 //     do `read: true` OR `read: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
 type CrudConfig<T> = {
-    read: { methodGetAll: Observable<T[]>, methodGetOne: (id: number) => Observable<T> } | false
-    create: { method: (entity: T) => Observable<T> } | false
-    update: { method: (entity: T) => Observable<T> } | false
-    delete: { method: (entity: T) => Observable<T> } | false
+    read: { methodGetAll: (val?: any) => Observable<T[]>, methodGetOne: (val?: any) => Observable<T> } | false
+    create: { method: (val?: any) => Observable<T> } | false
+    update: { method: (val?: any) => Observable<T> } | false
+    delete: { method: (val?: any) => Observable<T> } | false
 };
 
-type Method<T> = { methodGetAll: Observable<T[]>, methodGetOne: (id: number) => Observable<T> };
-type MethodCreate<T> = { method: (entity: T) => Observable<T> };
-type MethodUpdate<T> = { method: (entity: T) => Observable<T> };
-type MethodDelete<T> = { method: (entity: T) => Observable<T> };
+type Method<T> = { methodGetAll: (val?: any) => Observable<T[]>, methodGetOne: (val?: any) => Observable<T> };
+type MethodCreate<T> = { method: (val?: any) => Observable<T> };
+type MethodUpdate<T> = { method: (val?: any) => Observable<T> };
+type MethodDelete<T> = { method: (val?: any) => Observable<T> };
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<
     Config extends CrudConfig<Entity>,
     Entity extends BaseEntity
-> = (Config['read'] extends Method<Entity> ? { getAll: () => void, getOne: (id: number) => void } : {}) &
-    (Config['create'] extends MethodCreate<Entity> ? { create: (value: Entity) => void } : {}) &
-    (Config['update'] extends MethodUpdate<Entity> ? { update: (value: Entity) => void } : {}) &
-    (Config['delete'] extends MethodDelete<Entity> ? { delete: (value: Entity) => void } : {});
+> = (Config['read'] extends Method<Entity> ? { getAll: (val?: any) => void, getOne: (val?: any) => void } : {}) &
+    (Config['create'] extends MethodCreate<Entity> ? { create: (val?: any) => void } : {}) &
+    (Config['update'] extends MethodUpdate<Entity> ? { update: (val?: any) => void } : {}) &
+    (Config['delete'] extends MethodDelete<Entity> ? { delete: (val?: any) => void } : {});
 
 export function withCrudMappings<
     Config extends CrudConfig<Entity>,
@@ -63,12 +63,12 @@ export function withCrudMappings<
 
             const configRead = config.read;
             if (configRead) {
-                const getAll = rxMethod<void>(
+                const getAll = rxMethod<any>(
                     pipe(
-                        switchMap(() => {
+                        switchMap((val) => {
                             patchState(store, { loading: true });
 
-                            return configRead.methodGetAll.pipe(
+                            return configRead.methodGetAll(val).pipe(
                                 tapResponse({
                                     next: (items) => {
                                         patchState(store, {
@@ -86,7 +86,7 @@ export function withCrudMappings<
                     switchMap((id) => {
                         patchState(store, { loading: true });
 
-                        return configRead.methodGetOne!(id).pipe(
+                        return configRead.methodGetOne(id).pipe(
                             tapResponse({
                                 next: (item) => {
                                     patchState(store, {
@@ -101,7 +101,7 @@ export function withCrudMappings<
                 )
 
                 methods['getOne'] = (value: Entity['id']) => getOne(value);
-                methods['getAll'] = () => getAll();
+                methods['getAll'] = (val?: any) => getAll(val);
             }
 
             const configCreate = config.create
@@ -165,7 +165,7 @@ export function withCrudMappings<
                         switchMap((item) => {
                             patchState(store, { loading: true });
 
-                            return configDelete.method!(item).pipe(
+                            return configDelete.method(item).pipe(
                                 tapResponse({
                                     next: () => {
                                         patchState(store, {

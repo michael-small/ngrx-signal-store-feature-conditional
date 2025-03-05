@@ -43,7 +43,7 @@ const TodoAllCRUDStore = signalStore(
     withProps(() => ({ serv: inject(TodoAllCRUDMappingService) })),
     withFeatureFactory((store) =>
         withCrudMappings({
-            read: { methodGetAll: store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOneDifferentName(value)) },
+            read: { methodGetAll: () => store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOneDifferentName(value)) },
             create: { method: ((value: Todo) => store.serv.createDifferent(value)) },
             update: { method: ((value: Todo) => store.serv.updateDifferent(value)) },
             delete: { method: ((value: Todo) => store.serv.deleteDifferent(value)) }
