@@ -4,14 +4,16 @@
 
     🚀 Dynamic SignalStore CRUD: Built for Flexibility
 
-    Ever needed a CRUD system that adapts to different use cases? We’ll show you how to build a SignalStore feature that allows users to dynamically toggle features and adjust types accordingly.
+    Ever needed a CRUD system that adapts to different use cases? 
+    We’ll show you how to build a SignalStore feature that allows 
+    users to dynamically toggle features and adjust types accordingly.
 
     Expect:
     ✔ Live coding & hands-on problem-solving
     ✔ Strong typing vs. flexibility in TypeScript
     ✔ Designing a SignalStore extension that adapts to user configurations
 
-    This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
+This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.0.
 
 ## Development server
 
