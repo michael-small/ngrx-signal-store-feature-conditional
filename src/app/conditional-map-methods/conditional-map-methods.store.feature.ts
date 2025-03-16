@@ -59,6 +59,7 @@ export function withCrudMappings<
             state: type<BaseState<Entity>>(),
         },
         withMethods((store) => {
+            // https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
             const methods: Record<string, Function> = {};
 
             const configRead = config.read;
@@ -182,6 +183,13 @@ export function withCrudMappings<
                 methods['delete'] = (value: Entity) => d3lete(value);
             }
 
+            /**
+             * @example `methods` produced with 'create & 'delete'
+             * {
+             *     create: (value) => create(value),
+             *     delete: (value) => d3lete(value)
+             * }
+             */
             return methods as CrudMethods<Config, Entity>;
         }),
         withComputed(({ items }) => ({

@@ -71,6 +71,7 @@ export function withCrudConditional<
         },
         withMethods((store) => {
             const service = inject(DataService);
+            // https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
             const methods: Record<string, Function> = {};
 
             if (config.create) {
@@ -191,6 +192,13 @@ export function withCrudConditional<
                 methods['update'] = (value: Entity) => update(value)
             }
 
+            /**
+             * @example `methods` produced with 'create & 'delete'
+             * {
+             *     create: (value) => create(value),
+             *     delete: (value) => d3lete(value)
+             * }
+             */
             return methods as CrudMethods<Config, Entity>;
         }),
         withComputed(({ items }) => ({
