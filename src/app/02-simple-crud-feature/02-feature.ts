@@ -1,4 +1,4 @@
-import { Observable, pipe, switchMap } from 'rxjs';
+import { pipe, switchMap } from 'rxjs';
 import { computed, inject, Type } from '@angular/core';
 import {
     patchState,
@@ -9,30 +9,9 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
+import { BaseEntity, BaseState, CrudService } from '../shared/todos.model';
 
 // By Fabian: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
-
-// Gaurantees minimum identifier + type
-export type BaseEntity = { id: number };
-
-// Minimum for CRUD feature
-export type BaseState<Entity> = {
-    selectedItem: Entity | null;
-    items: Entity[];
-    loading: boolean;
-};
-
-export interface CrudService<T> {
-    readAll(): Observable<T[]>;
-
-    readOne(id: number): Observable<T>;
-
-    create(value: T): Observable<T>;
-
-    update(value: T): Observable<T>;
-
-    delete(value: T): Observable<any>;
-}
 
 export function withCrudOperations<Entity extends BaseEntity>(
     dataServiceType: Type<CrudService<Entity>> // pass the service here

@@ -1,34 +1,15 @@
 import { Component, inject, Injectable, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { signalStore, withState } from '@ngrx/signals';
-import { BaseEntity, BaseState, CrudService, withCrudConditional } from './04-feature';
+import { withCrudConditional } from './04-feature';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
+import { CrudService, Todo, TodoState } from '../shared/todos.model';
 
-export interface TodoState extends BaseState<Todo> { }
-export interface Todo extends BaseEntity {
-    title: string;
-    completed: boolean;
-    userId: number;
-}
-
-export const initialState: TodoState = {
-    selectedItem: null,
-    items: [],
-    loading: false,
-};
-
-// Implementing services can pick and choose what to implement, and then
-//     reflect that choice with the `CrudConfig` of the feature.
-// For maximizing correctness of everything implementing the right features,
-//     use the TypeScript `Pick` helper per each `CrudService` method
-//     corresponding to your `CrudConfig`
-
-// Corresponds to `todos-all-crud` component
 @Injectable({
   providedIn: 'root',
 })
-export class TodoAllCRUDService implements CrudService<Todo> {
+class TodoAllCRUDService implements CrudService<Todo> {
   private readonly http = inject(HttpClient);
 
   private url = `https://jsonplaceholder.typicode.com/todos`;
@@ -56,6 +37,11 @@ export class TodoAllCRUDService implements CrudService<Todo> {
   }
 }
 
+export const initialState: TodoState = {
+    selectedItem: null,
+    items: [],
+    loading: false,
+};
 
 const TodoAllCRUDStore = signalStore(
     withState(initialState),

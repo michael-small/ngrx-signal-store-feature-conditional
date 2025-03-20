@@ -1,21 +1,15 @@
 import { Component, inject, Injectable, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { signalStore, withState } from '@ngrx/signals';
-import { BaseEntity, BaseState, CrudService, withCrudOperations } from './02-feature';
+import { withCrudOperations } from './02-feature';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-
-// Implementing model + service
-export interface Todo extends BaseEntity {
-    title: string;
-    completed: boolean;
-    userId: number;
-}
+import { CrudService, Todo, TodoState } from '../shared/todos.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class TodoAllCRUDService implements CrudService<Todo> {
+class TodoAllCRUDService implements CrudService<Todo> {
     private readonly http = inject(HttpClient);
 
     private url = `https://jsonplaceholder.typicode.com/todos`;
@@ -44,8 +38,6 @@ export class TodoAllCRUDService implements CrudService<Todo> {
 }
 
 // Implementing store
-export interface TodoState extends BaseState<Todo> { }
-
 export const initialState: TodoState = {
     selectedItem: null,
     items: [],

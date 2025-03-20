@@ -1,19 +1,62 @@
 import { Injectable } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { initialState, Todo } from '../todo.service';
 import { Observable, of } from 'rxjs';
-import { CrudService, withCrudConditional } from './basic-conditional.store.feature';
 import { signalStore, withHooks, withState } from '@ngrx/signals';
+import { withCrudConditional } from './04-feature';
+import { initialState } from './04-todos-all-crud.component';
+import { CrudService, Todo } from '../shared/todos.model';
+
+@Injectable({
+    providedIn: 'root',
+})
+class TodoAllCRUDService implements CrudService<Todo> {
+    readOne(id: number) {
+        return of(createTodo({ id: id }))
+    }
+
+    readAll(): Observable<Todo[]> {
+        return of([{ ...createTodo(), id: 1 }])
+    }
+
+    create(value: Todo) {
+        return of(value)
+    }
+
+    update(value: Todo) {
+        return of(value)
+    }
+
+    delete(value: Todo) {
+        return of(undefined)
+    }
+}
 
 describe('withCrudConditional', () => {
     it('should do all CRUD if all enabled', fakeAsync(() => {
+        const AllCRUDStore = signalStore(
+            { providedIn: 'root' },
+            withState(initialState),
+            withCrudConditional(TodoAllCRUDService, {
+                create: true,
+                readOne: true,
+                readAll: true,
+                update: true,
+                delete: true,
+            }),
+            withHooks({
+                onInit(store) {
+                    currentTodoId = 0;
+                },
+            }),
+        );
+
         TestBed.runInInjectionContext(() => {
             const store = new AllCRUDStore();
 
             tick();
             expect(store.items().length).toBe(0);
 
-            store.getAll();
+            store.readAll();
             tick();
             expect(store.items().length).toBe(1);
 
@@ -21,7 +64,7 @@ describe('withCrudConditional', () => {
             tick();
             expect(store.items().length).toBe(2)
 
-            store.getOne(1)
+            store.readOne(1)
             tick()
             expect(store.selectedItem()).toEqual({ ...createTodo(), id: 1 })
 
@@ -36,30 +79,53 @@ describe('withCrudConditional', () => {
         });
     }))
     it('should do expose create() if only C = true', fakeAsync(() => {
+        const CStore = signalStore(
+            { providedIn: 'root' },
+            withState(initialState),
+            withCrudConditional(TodoAllCRUDService, {
+                create: true,
+                readOne: false,
+                readAll: false,
+                update: false,
+                delete: false,
+            })
+        );
+
         TestBed.runInInjectionContext(() => {
             const store = new CStore();
 
             expect(typeof store.create).toBe('function')
 
             // @ts-expect-error
-            expect(() => store.getAll()).toThrow();
+            expect(() => store.readAll()).toThrow();
             // @ts-expect-error
-            expect(() => store.getOne(1)).toThrow();
+            expect(() => store.readOne(1)).toThrow();
             // @ts-expect-error
             expect(() => store.update({ ...createTodo(), id: 1, completed: true })).toThrow();
             // @ts-expect-error
             expect(() => store.delete({ ...createTodo(), id: 2 })).toThrow();
         });
     }))
-    it('should do expose getOne() and getAll() if only R = true', fakeAsync(() => {
+    it('should do expose readOne() and readAll() if only R = true', fakeAsync(() => {
+        const RStore = signalStore(
+            { providedIn: 'root' },
+            withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
+            withCrudConditional(TodoAllCRUDService, {
+                create: false,
+                readOne: true,
+                readAll: true,
+                update: false,
+                delete: false,
+            })
+        );
         TestBed.runInInjectionContext(() => {
             const store = new RStore();
 
-            store.getAll();
-            store.getOne(1);
+            store.readAll();
+            store.readOne(1);
 
-            expect(typeof store.getAll).toBe('function')
-            expect(typeof store.getOne).toBe('function')
+            expect(typeof store.readAll).toBe('function')
+            expect(typeof store.readOne).toBe('function')
 
             // @ts-expect-error
             expect(() => store.create({ ...createTodo(), id: 2 })).toThrow();
@@ -70,15 +136,27 @@ describe('withCrudConditional', () => {
         });
     }))
     it('should do expose update() if only U = true', fakeAsync(() => {
+        const UStore = signalStore(
+            { providedIn: 'root' },
+            withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
+            withCrudConditional(TodoAllCRUDService, {
+                create: false,
+                readOne: false,
+                readAll: false,
+                update: true,
+                delete: false,
+            })
+        );
+
         TestBed.runInInjectionContext(() => {
             const store = new UStore();
 
             expect(typeof store.update).toBe('function')
 
             // @ts-expect-error
-            expect(() => store.getAll()).toThrow();
+            expect(() => store.readAll()).toThrow();
             // @ts-expect-error
-            expect(() => store.getOne(1)).toThrow();
+            expect(() => store.readOne(1)).toThrow();
             // @ts-expect-error
             expect(() => store.create(createTodo())).toThrow();
             // @ts-expect-error
@@ -86,15 +164,27 @@ describe('withCrudConditional', () => {
         });
     }))
     it('should do expose delete() if only D = true', fakeAsync(() => {
+        const DStore = signalStore(
+            { providedIn: 'root' },
+            withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
+            withCrudConditional(TodoAllCRUDService, {
+                create: false,
+                readOne: false,
+                readAll: false,
+                update: false,
+                delete: true,
+            })
+        );
+
         TestBed.runInInjectionContext(() => {
             const store = new DStore();
 
             expect(typeof store.delete).toBe('function')
 
             // @ts-expect-error
-            expect(() => store.getAll()).toThrow();
+            expect(() => store.readAll()).toThrow();
             // @ts-expect-error
-            expect(() => store.getOne(1)).toThrow();
+            expect(() => store.readOne(1)).toThrow();
             // @ts-expect-error
             expect(() => store.create(createTodo())).toThrow();
             // @ts-expect-error
@@ -113,85 +203,3 @@ const createTodo = (todo: Partial<Todo> = {}) => ({
     },
     ...todo
 })
-
-@Injectable({
-    providedIn: 'root',
-})
-export class TodoAllCRUDService implements CrudService<Todo> {
-    getOne(id: number) {
-        return of(createTodo({ id: id }))
-    }
-
-    getAll(): Observable<Todo[]> {
-        return of([{ ...createTodo(), id: 1 }])
-    }
-
-    create(value: Todo) {
-        return of(value)
-    }
-
-    update(value: Todo) {
-        return of(value)
-    }
-
-    delete(value: Todo) {
-        return of(undefined)
-    }
-}
-
-const AllCRUDStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialState),
-    withCrudConditional(TodoAllCRUDService, {
-        create: true,
-        read: true,
-        update: true,
-        delete: true,
-    }),
-    withHooks({
-        onInit(store) {
-            currentTodoId = 0;
-        },
-    }),
-);
-
-const CStore = signalStore(
-    { providedIn: 'root' },
-    withState(initialState),
-    withCrudConditional(TodoAllCRUDService, {
-        create: true,
-        read: false,
-        update: false,
-        delete: false,
-    })
-);
-const RStore = signalStore(
-    { providedIn: 'root' },
-    withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
-    withCrudConditional(TodoAllCRUDService, {
-        create: false,
-        read: true,
-        update: false,
-        delete: false,
-    })
-);
-const UStore = signalStore(
-    { providedIn: 'root' },
-    withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
-    withCrudConditional(TodoAllCRUDService, {
-        create: false,
-        read: false,
-        update: true,
-        delete: false,
-    })
-);
-const DStore = signalStore(
-    { providedIn: 'root' },
-    withState({ ...initialState, items: [{ ...createTodo(), id: 1 }] }),
-    withCrudConditional(TodoAllCRUDService, {
-        create: false,
-        read: false,
-        update: false,
-        delete: true,
-    })
-);

@@ -1,4 +1,4 @@
-import { Observable, pipe, switchMap } from 'rxjs';
+import { pipe, switchMap } from 'rxjs';
 import { computed, inject, Type } from '@angular/core';
 import {
     patchState,
@@ -9,21 +9,7 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-
-// The general structure/implementation of the service + CRUD methods for this example were started on top of
-// - This article's example: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
-// - And the ngrx-toolkit's `withDataService()` approach: https://ngrx-toolkit.angulararchitects.io/docs/with-data-service
-// and then expanded on to make these opt-in / conditional features
-
-// Gaurantees minimum identifier + type
-export type BaseEntity = { id: number };
-
-// Minimum for CRUD feature
-export type BaseState<Entity> = {
-    selectedItem: Entity | null;
-    items: Entity[];
-    loading: boolean;
-};
+import { BaseEntity, BaseState, CrudService } from '../shared/todos.model';
 
 // Feature users can pick and choose what to enable
 type CrudConfig = {
@@ -33,23 +19,6 @@ type CrudConfig = {
     delete: boolean;
     update: boolean;
 };
-
-// The users can implement a `Partial` (or to be more precise use a `Pick`)
-//     of this service, provided that it matches the respective CrudConfig options.
-// The feature uses non-null assertions (`!`) internally with the
-//     assumption that the `CrudConfig` is valid to what the
-//     implementing service offers.
-export interface CrudService<T> {
-    create(value: T): Observable<T>;
-
-    readOne(id: number): Observable<T>;
-
-    readAll(): Observable<T[]>;
-
-    update(value: T): Observable<T>;
-
-    delete(value: T): Observable<any>;
-}
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<

@@ -1,4 +1,4 @@
-import { Component, Inject, inject, Injectable, signal } from '@angular/core';
+import { Component, inject, Injectable, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { HttpClient } from '@angular/common/http';
@@ -7,7 +7,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
 // Implementing model + service
-export interface Todo {
+interface Todo {
     id: number;
     title: string;
     completed: boolean;
@@ -17,7 +17,7 @@ export interface Todo {
 @Injectable({
     providedIn: 'root',
 })
-export class TodoAllCRUDService {
+class TodoAllCRUDService {
     private readonly http = inject(HttpClient);
 
     private url = `https://jsonplaceholder.typicode.com/todos`;
@@ -46,13 +46,13 @@ export class TodoAllCRUDService {
 }
 
 // Implementing store
-export type TodoState = {
+type TodoState = {
     selectedItem: Todo | null;
     items: Todo[];
     loading: boolean;
 };
 
-export const initialState: TodoState = {
+const initialState: TodoState = {
     selectedItem: null,
     items: [],
     loading: false,
