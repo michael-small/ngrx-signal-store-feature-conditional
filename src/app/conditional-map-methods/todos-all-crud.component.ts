@@ -25,15 +25,15 @@ export class TodoAllCRUDMappingService {
             .pipe(map((todos) => todos.filter((td) => td.id < 3)));
     }
 
-    createDifferent(value: Todo) {
+    createDifferent(value: Partial<Todo>) {
         return this.http.post<Todo>(this.url, { value });
     }
 
-    updateDifferent(value: Todo) {
+    updateDifferent(value: Partial<Todo>) {
         return this.http.put<Todo>(`${this.url}/${value.id}`, value);
     }
 
-    deleteDifferent(value: Todo) {
+    deleteDifferent(value: Partial<Todo>) {
         return this.http.delete<Todo>(`${this.url}/${value.id}`);
     }
 }
@@ -45,9 +45,9 @@ const TodoAllCRUDStore = signalStore(
         withCrudMappings({
             readAll: () => store.serv.getAllDifferentName(),
             readOne: (value: number) => store.serv.getOneDifferentName(value),
-            create: (value: Todo) => store.serv.createDifferent(value),
-            update: (value: Todo) => store.serv.updateDifferent(value),
-            delete: (value: Todo) => store.serv.deleteDifferent(value),
+            create: (value: Partial<Todo>) => store.serv.createDifferent(value),
+            update: (value: Partial<Todo>) => store.serv.updateDifferent(value),
+            delete: (value: Partial<Todo>) => store.serv.deleteDifferent(value),
         })
     )
 );

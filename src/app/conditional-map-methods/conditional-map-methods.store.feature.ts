@@ -23,29 +23,29 @@ export type BaseState<Entity> = {
 //
 // This shape is obtuse but for a proof of concept whatever. Should just be able in theory to
 //     do `readAll: true` OR `readAll: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
-type CrudConfig<T> = {
-    readAll: ((val?: any) => Observable<T[]>) | false;
-    readOne: ((val?: any) => Observable<T>) | false;
-    create: ((val?: any) => Observable<T>) | false;
-    update: ((val?: any) => Observable<T>) | false;
-    delete: ((val?: any) => Observable<T>) | false;
+type CrudConfig<T extends BaseEntity> = {
+    readAll: ((search?: any) => Observable<T[]>) | false;
+    readOne: ((val: T['id']) => Observable<T>) | false;
+    create: ((val: Partial<T>) => Observable<T>) | false;
+    update: ((val: Partial<T>) => Observable<T>) | false;
+    delete: ((val: Partial<T>) => Observable<T>) | false;
 };
 
-type MethodRead<T> = (val?: any) => Observable<T[]>;
-type MethodReadOne<T> = (val?: any) => Observable<T>;
-type MethodCreate<T> = (val?: any) => Observable<T>;
-type MethodUpdate<T> = (val?: any) => Observable<T>;
-type MethodDelete<T> = (val?: any) => Observable<T>;
+type MethodRead<T> = (search?: any) => Observable<T[]>;
+type MethodReadOne<T extends BaseEntity> = (val: T['id']) => Observable<T>;
+type MethodCreate<T> = (val: Partial<T>) => Observable<T>;
+type MethodUpdate<T> = (val: Partial<T>) => Observable<T>;
+type MethodDelete<T> = (val: Partial<T>) => Observable<T>;
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<
     Config extends CrudConfig<Entity>,
     Entity extends BaseEntity,
-> = (Config['readAll'] extends MethodRead<Entity> ? { getAll: (val?: any) => void } : {}) &
-    (Config['readOne'] extends MethodReadOne<Entity> ? { getOne: (val?: any) => void } : {}) &
-    (Config['create'] extends MethodCreate<Entity> ? { create: (val?: any) => void } : {}) &
-    (Config['update'] extends MethodUpdate<Entity> ? { update: (val?: any) => void } : {}) &
-    (Config['delete'] extends MethodDelete<Entity> ? { delete: (val?: any) => void } : {});
+> = (Config['readAll'] extends MethodRead<Entity> ? { getAll: (search?: any) => void } : {}) &
+    (Config['readOne'] extends MethodReadOne<Entity> ? { getOne: (val: Entity['id']) => void } : {}) &
+    (Config['create'] extends MethodCreate<Entity> ? { create: (val: Partial<Entity>) => void } : {}) &
+    (Config['update'] extends MethodUpdate<Entity> ? { update: (val: Partial<Entity>) => void } : {}) &
+    (Config['delete'] extends MethodDelete<Entity> ? { delete: (val: Partial<Entity>) => void } : {});
 
 export function withCrudMappings<Config extends CrudConfig<Entity>, Entity extends BaseEntity>(config: Config) {
     return signalStoreFeature(

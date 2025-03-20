@@ -4,7 +4,6 @@ import { map, Observable } from 'rxjs';
 import { BaseEntity, BaseState, CrudService } from './basic-conditional/basic-conditional.store.feature';
 
 export interface TodoState extends BaseState<Todo> { }
-
 export interface Todo extends BaseEntity {
     title: string;
     completed: boolean;

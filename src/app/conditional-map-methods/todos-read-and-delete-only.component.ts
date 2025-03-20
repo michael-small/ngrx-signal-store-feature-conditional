@@ -25,7 +25,7 @@ export class TodoReadAndDeleteMappingService {
             .pipe(map((todos) => todos.filter((td) => td.id < 3)));
     }
 
-    deleteDifferent(value: Todo) {
+    deleteDifferent(value: Partial<Todo>) {
         return this.http.delete<Todo>(`${this.url}/${value.id}`);
     }
 }
@@ -39,7 +39,7 @@ const TodoReadAndDeleteOnlyStore = signalStore(
             readOne: (value: number) => store.serv.getOneDifferentName(value),
             create: false,
             update: false,
-            delete: (value: Todo) => store.serv.deleteDifferent(value)
+            delete: (value: Partial<Todo>) => store.serv.deleteDifferent(value)
         })
     )
 );
