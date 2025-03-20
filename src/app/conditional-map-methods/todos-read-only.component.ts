@@ -32,7 +32,8 @@ const TodoReadOnlyStore = signalStore(
     withProps(() => ({ serv: inject(TodoReadMappingService) })),
     withFeatureFactory((store) =>
         withCrudMappings({
-            read: { methodGetAll: () => store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOne(value)) },
+            readAll: () => store.serv.getAllDifferentName(),
+            readOne: (value: number) => store.serv.getOne(value),
             create: false,
             update: false,
             delete: false

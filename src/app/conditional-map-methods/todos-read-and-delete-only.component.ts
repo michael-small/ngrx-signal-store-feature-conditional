@@ -35,10 +35,11 @@ const TodoReadAndDeleteOnlyStore = signalStore(
     withProps(() => ({ serv: inject(TodoReadAndDeleteMappingService) })),
     withFeatureFactory((store) =>
         withCrudMappings({
-            read: { methodGetAll: () => store.serv.getAllDifferentName(), methodGetOne: ((value: number) => store.serv.getOneDifferentName(value)) },
+            readAll: () => store.serv.getAllDifferentName(),
+            readOne: (value: number) => store.serv.getOneDifferentName(value),
             create: false,
             update: false,
-            delete: { method: ((value: Todo) => store.serv.deleteDifferent(value)) }
+            delete: (value: Todo) => store.serv.deleteDifferent(value)
         })
     )
 );
@@ -74,7 +75,7 @@ export class TodosReadAndDeleteOnlyMapComponent {
     }
 
     getTodos() {
-        this.todoStore.getAll('a');
+        this.todoStore.getAll();
     }
 
     ngOnInit() {

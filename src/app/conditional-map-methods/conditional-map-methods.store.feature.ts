@@ -1,12 +1,6 @@
 import { Observable, pipe, switchMap } from 'rxjs';
 import { computed } from '@angular/core';
-import {
-    patchState,
-    signalStoreFeature,
-    type,
-    withMethods,
-    withComputed,
-} from '@ngrx/signals';
+import { patchState, signalStoreFeature, type, withMethods, withComputed } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
@@ -16,7 +10,7 @@ import { tapResponse } from '@ngrx/operators';
 // and then expanded on to make these opt-in / conditional features
 
 // Gaurantees minimum identifier + type
-export type BaseEntity = { id: number };
+export type BaseEntity = { id?: number };
 
 // Minimum for CRUD feature
 export type BaseState<Entity> = {
@@ -28,50 +22,50 @@ export type BaseState<Entity> = {
 // Feature users can pick and choose what to enable
 //
 // This shape is obtuse but for a proof of concept whatever. Should just be able in theory to
-//     do `read: true` OR `read: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
+//     do `readAll: true` OR `readAll: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
 type CrudConfig<T> = {
-    read: { methodGetAll: (val?: any) => Observable<T[]>, methodGetOne: (val?: any) => Observable<T> } | false
-    create: { method: (val?: any) => Observable<T> } | false
-    update: { method: (val?: any) => Observable<T> } | false
-    delete: { method: (val?: any) => Observable<T> } | false
+    readAll: ((val?: any) => Observable<T[]>) | false;
+    readOne: ((val?: any) => Observable<T>) | false;
+    create: ((val?: any) => Observable<T>) | false;
+    update: ((val?: any) => Observable<T>) | false;
+    delete: ((val?: any) => Observable<T>) | false;
 };
 
-type Method<T> = { methodGetAll: (val?: any) => Observable<T[]>, methodGetOne: (val?: any) => Observable<T> };
-type MethodCreate<T> = { method: (val?: any) => Observable<T> };
-type MethodUpdate<T> = { method: (val?: any) => Observable<T> };
-type MethodDelete<T> = { method: (val?: any) => Observable<T> };
+type MethodRead<T> = (val?: any) => Observable<T[]>;
+type MethodReadOne<T> = (val?: any) => Observable<T>;
+type MethodCreate<T> = (val?: any) => Observable<T>;
+type MethodUpdate<T> = (val?: any) => Observable<T>;
+type MethodDelete<T> = (val?: any) => Observable<T>;
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<
     Config extends CrudConfig<Entity>,
-    Entity extends BaseEntity
-> = (Config['read'] extends Method<Entity> ? { getAll: (val?: any) => void, getOne: (val?: any) => void } : {}) &
+    Entity extends BaseEntity,
+> = (Config['readAll'] extends MethodRead<Entity> ? { getAll: (val?: any) => void } : {}) &
+    (Config['readOne'] extends MethodReadOne<Entity> ? { getOne: (val?: any) => void } : {}) &
     (Config['create'] extends MethodCreate<Entity> ? { create: (val?: any) => void } : {}) &
     (Config['update'] extends MethodUpdate<Entity> ? { update: (val?: any) => void } : {}) &
     (Config['delete'] extends MethodDelete<Entity> ? { delete: (val?: any) => void } : {});
 
-export function withCrudMappings<
-    Config extends CrudConfig<Entity>,
-    Entity extends BaseEntity
->(config: Config) {
+export function withCrudMappings<Config extends CrudConfig<Entity>, Entity extends BaseEntity>(config: Config) {
     return signalStoreFeature(
         {
             state: type<BaseState<Entity>>(),
         },
-        withMethods((store) => {
+        withMethods(store => {
             // https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type
             const methods: Record<string, Function> = {};
 
-            const configRead = config.read;
-            if (configRead) {
+            const configReadAll = config.readAll;
+            if (configReadAll) {
                 const getAll = rxMethod<any>(
                     pipe(
-                        switchMap((val) => {
+                        switchMap(val => {
                             patchState(store, { loading: true });
 
-                            return configRead.methodGetAll(val).pipe(
+                            return configReadAll(val).pipe(
                                 tapResponse({
-                                    next: (items) => {
+                                    next: items => {
                                         patchState(store, {
                                             items: items,
                                         });
@@ -83,13 +77,18 @@ export function withCrudMappings<
                         })
                     )
                 );
+                methods['getAll'] = (val?: any) => getAll(val);
+            }
+
+            const configReadOne = config.readOne;
+            if (configReadOne) {
                 const getOne = rxMethod<number>(
-                    switchMap((id) => {
+                    switchMap(id => {
                         patchState(store, { loading: true });
 
-                        return configRead.methodGetOne(id).pipe(
+                        return configReadOne(id).pipe(
                             tapResponse({
-                                next: (item) => {
+                                next: item => {
                                     patchState(store, {
                                         selectedItem: item,
                                     });
@@ -97,24 +96,23 @@ export function withCrudMappings<
                                 error: console.error,
                                 finalize: () => patchState(store, { loading: false }),
                             })
-                        )
+                        );
                     })
-                )
+                );
 
-                methods['getOne'] = (value: Entity['id']) => getOne(value);
-                methods['getAll'] = (val?: any) => getAll(val);
+                methods['getOne'] = (value: Entity['id']) => getOne(value ?? 0);
             }
 
-            const configCreate = config.create
+            const configCreate = config.create;
             if (configCreate) {
                 const create = rxMethod<Entity>(
                     pipe(
-                        switchMap((value) => {
+                        switchMap(value => {
                             patchState(store, { loading: true });
 
-                            return configCreate.method(value).pipe(
+                            return configCreate(value).pipe(
                                 tapResponse({
-                                    next: (addedItem) => {
+                                    next: addedItem => {
                                         patchState(store, {
                                             items: [...store.items(), addedItem],
                                         });
@@ -124,7 +122,7 @@ export function withCrudMappings<
                                 })
                             );
                         })
-                    ),
+                    )
                 );
                 methods['create'] = (value: Entity) => create(value);
             }
@@ -133,14 +131,14 @@ export function withCrudMappings<
             if (configUpdate) {
                 const update = rxMethod<Entity>(
                     pipe(
-                        switchMap((item) => {
+                        switchMap(item => {
                             patchState(store, { loading: true });
 
-                            return configUpdate.method(item).pipe(
+                            return configUpdate(item).pipe(
                                 tapResponse({
-                                    next: (updatedItem) => {
+                                    next: updatedItem => {
                                         const allItems = [...store.items()];
-                                        const index = allItems.findIndex((x) => x.id === item.id);
+                                        const index = allItems.findIndex(x => x.id === item.id);
 
                                         allItems[index] = updatedItem;
 
@@ -154,8 +152,8 @@ export function withCrudMappings<
                             );
                         })
                     )
-                )
-                methods['update'] = (value: Entity) => update(value)
+                );
+                methods['update'] = (value: Entity) => update(value);
             }
 
             const configDelete = config.delete;
@@ -163,14 +161,14 @@ export function withCrudMappings<
                 // `delete` is a reverved word
                 const d3lete = rxMethod<Entity>(
                     pipe(
-                        switchMap((item) => {
+                        switchMap(item => {
                             patchState(store, { loading: true });
 
-                            return configDelete.method(item).pipe(
+                            return configDelete(item).pipe(
                                 tapResponse({
                                     next: () => {
                                         patchState(store, {
-                                            items: [...store.items().filter((x) => x.id !== item.id)],
+                                            items: [...store.items().filter(x => x.id !== item.id)],
                                         });
                                     },
                                     error: console.error,
@@ -179,7 +177,7 @@ export function withCrudMappings<
                             );
                         })
                     )
-                )
+                );
                 methods['delete'] = (value: Entity) => d3lete(value);
             }
 
