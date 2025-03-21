@@ -7,11 +7,11 @@ import { FormsModule } from '@angular/forms'
     template: `
         <p>External Links</p>
         <ul>
-            <li><a routerLink="https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/">Fabian's article</a></li>
-            <li><a routerLink="https://ngrx-toolkit.angulararchitects.io/docs/with-data-service">withDataService</a></li>
-            <li><a routerLink="https://docs.google.com/presentation/d/1nZpCFDqNtvtZ-7AJ68WEEGSbYJd6-mAE4lZqCYwlLkg/edit?usp=sharing">Slides</a></li>
-            <li><a routerLink="https://github.com/michael-small/ngrx-signal-store-feature-conditional">Repo</a></li>
-            <li><a routerLink="https://www.youtube.com/watch?v=1D8VTlTnJ2E">Stream/VOD</a></li>
+            <li><a href="https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/" target="_blank">Fabian's article</a></li>
+            <li><a href="https://ngrx-toolkit.angulararchitects.io/docs/with-data-service" target="_blank">withDataService</a></li>
+            <li><a href="https://docs.google.com/presentation/d/1nZpCFDqNtvtZ-7AJ68WEEGSbYJd6-mAE4lZqCYwlLkg/edit?usp=sharing" target="_blank">Slides</a></li>
+            <li><a href="https://github.com/michael-small/ngrx-signal-store-feature-conditional" target="_blank">Repo</a></li>
+            <li><a href="https://www.youtube.com/watch?v=1D8VTlTnJ2E" target="_blank">Stream/VOD</a></li>
         </ul>
 
         <p>App Links</p>
