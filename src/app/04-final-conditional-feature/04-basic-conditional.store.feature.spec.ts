@@ -4,7 +4,7 @@ import { Observable, of } from 'rxjs';
 import { signalStore, withHooks, withState } from '@ngrx/signals';
 import { withCrudConditional } from './04-feature';
 import { initialState } from './04-todos-all-crud.component';
-import { CrudService, Todo } from '../shared/todos.model';
+import { CrudService, Todo } from '../shared/todos-and-store.model';
 
 @Injectable({
     providedIn: 'root',

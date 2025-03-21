@@ -5,7 +5,7 @@ import { signalStore, withProps, withState } from '@ngrx/signals';
 import { withCrudMappings } from './05-conditional-map-methods.store.feature';
 import { withFeatureFactory } from '@angular-architects/ngrx-toolkit';
 import { JsonPipe } from '@angular/common';
-import { Todo, TodoState } from '../shared/todos.model';
+import { Todo, TodoState } from '../shared/todos-and-store.model';
 
 @Injectable({
     providedIn: 'root',

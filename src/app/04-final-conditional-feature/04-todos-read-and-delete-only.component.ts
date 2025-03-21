@@ -4,7 +4,7 @@ import { signalStore, withState } from '@ngrx/signals';
 import { delay, map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { withCrudConditional } from './04-feature';
-import { CrudService, Todo, TodoState } from '../shared/todos.model';
+import { CrudService, Todo, TodoState } from '../shared/todos-and-store.model';
 
 @Injectable({
     providedIn: 'root',

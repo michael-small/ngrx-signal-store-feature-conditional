@@ -9,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-import { BaseEntity, BaseState, CrudService } from '../shared/todos.model';
+import { BaseEntity, BaseState, CrudService } from '../shared/todos-and-store.model';
 
 // By Fabian: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
 

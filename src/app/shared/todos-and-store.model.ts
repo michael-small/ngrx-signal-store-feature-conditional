@@ -10,13 +10,6 @@ export type BaseState<Entity> = {
     loading: boolean;
 };
 
-export interface TodoState extends BaseState<Todo> { }
-export interface Todo extends BaseEntity {
-    title: string;
-    completed: boolean;
-    userId: number;
-}
-
 // The users can implement a `Partial` (or to be more precise use a `Pick`)
 //     of this service, provided that it matches the respective CrudConfig options.
 // The feature uses non-null assertions (`!`) internally with the
@@ -32,4 +25,12 @@ export interface CrudService<T> {
     update(value: T): Observable<T>;
 
     delete(value: T): Observable<any>;
+}
+
+// Actual model
+export interface TodoState extends BaseState<Todo> { }
+export interface Todo extends BaseEntity {
+    title: string;
+    completed: boolean;
+    userId: number;
 }

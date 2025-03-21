@@ -9,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
-import { BaseEntity, BaseState, CrudService } from '../shared/todos.model';
+import { BaseEntity, BaseState, CrudService } from '../shared/todos-and-store.model';
 
 // Feature users can pick and choose what to enable
 type CrudConfig = {
