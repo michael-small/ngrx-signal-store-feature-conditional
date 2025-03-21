@@ -15,6 +15,10 @@ export class TodoAllCRUDMappingService {
 
     private url = `https://jsonplaceholder.typicode.com/todos`;
 
+    createDifferent(value: Partial<Todo>) {
+        return this.http.post<Todo>(this.url, { value }).pipe(delay(1000));
+    }
+
     getOneDifferentName(id: number) {
         return this.http.get<Todo>(`${this.url}/${id}`).pipe(delay(1000));
     }
@@ -23,10 +27,6 @@ export class TodoAllCRUDMappingService {
         return this.http
             .get<Todo[]>(this.url)
             .pipe(map((todos) => todos.filter((td) => td.id < 3)), delay(1000));
-    }
-
-    createDifferent(value: Partial<Todo>) {
-        return this.http.post<Todo>(this.url, { value }).pipe(delay(1000));
     }
 
     updateDifferent(value: Partial<Todo>) {

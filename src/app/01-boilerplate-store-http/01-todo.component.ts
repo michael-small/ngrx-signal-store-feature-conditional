@@ -22,29 +22,35 @@ class TodoAllCRUDService {
 
     private url = `https://jsonplaceholder.typicode.com/todos`;
 
-    getItem(id: number) {
+    create(value: Todo) {
+        return this.http.post<Todo>(this.url, { value }).pipe(
+            delay(1000)
+        );
+    }
+
+    readOne(id: number) {
         return this.http.get<Todo>(`${this.url}/${id}`).pipe(
             delay(1000)
         );
     }
 
-    getItems(): Observable<Todo[]> {
+    readAll(): Observable<Todo[]> {
         return this.http.get<Todo[]>(this.url).pipe(
             map(todos => todos.filter(td => td.id < 3)),
             delay(1000)
         );
     }
 
-    addItem(value: Todo) {
-        return this.http.post<Todo>(this.url, { value }).pipe(delay(1000));
+    update(value: Todo) {
+        return this.http.put<Todo>(`${this.url}/${value.id}`, value).pipe(
+            delay(500)
+        );
     }
 
-    updateItem(value: Todo) {
-        return this.http.put<Todo>(`${this.url}/${value.id}`, value).pipe(delay(500));
-    }
-
-    deleteItem(value: Todo) {
-        return this.http.delete(`${this.url}/${value.id}`).pipe(delay(500));
+    delete(value: Todo) {
+        return this.http.delete(`${this.url}/${value.id}`).pipe(
+            delay(500)
+        );
     }
 }
 
@@ -69,7 +75,7 @@ const TodoAllCRUDStore = signalStore(
                 switchMap((value) => {
                     patchState(store, { loading: true });
 
-                    return service.addItem(value).pipe(
+                    return service.create(value).pipe(
                         tapResponse({
                             next: (addedItem) => {
                                 patchState(store, {
@@ -88,7 +94,7 @@ const TodoAllCRUDStore = signalStore(
                 switchMap(() => {
                     patchState(store, { loading: true });
 
-                    return service.getItems!().pipe(
+                    return service.readAll!().pipe(
                         tapResponse({
                             next: (items) => {
                                 patchState(store, {
@@ -107,7 +113,7 @@ const TodoAllCRUDStore = signalStore(
                 switchMap((id) => {
                     patchState(store, { loading: true });
 
-                    return service.getItem!(id).pipe(
+                    return service.readOne!(id).pipe(
                         tapResponse({
                             next: (item) => {
                                 patchState(store, {
@@ -126,7 +132,7 @@ const TodoAllCRUDStore = signalStore(
                 switchMap((item) => {
                     patchState(store, { loading: true });
 
-                    return service.deleteItem(item).pipe(
+                    return service.delete(item).pipe(
                         tapResponse({
                             next: () => {
                                 patchState(store, {
@@ -145,7 +151,7 @@ const TodoAllCRUDStore = signalStore(
                 switchMap((item) => {
                     patchState(store, { loading: true });
 
-                    return service.updateItem(item).pipe(
+                    return service.update(item).pipe(
                         tapResponse({
                             next: (updatedItem) => {
                                 const allItems = [...store.items()];
