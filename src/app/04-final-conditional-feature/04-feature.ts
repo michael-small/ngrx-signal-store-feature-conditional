@@ -24,7 +24,8 @@ type CrudConfig = {
 type CrudMethods<
     Config extends CrudConfig,
     Entity extends BaseEntity
-> = (Config['create'] extends true ? { create: (value: Entity) => void } : {}) &
+> = 
+    (Config['create'] extends true ? { create: (value: Entity) => void } : {}) &
     (Config['readOne'] extends true
         ? { readOne: (id: number) => void }
         : {}) &  
@@ -175,6 +176,7 @@ export function withCrudConditional<
              *     delete: (value) => d3lete(value)
              * }
              */
+            // console.log(methods) // comment back in
             return methods as CrudMethods<Config, Entity>;
         }),
         withComputed(({ items }) => ({
