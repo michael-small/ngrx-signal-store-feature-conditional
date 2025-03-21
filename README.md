@@ -1,5 +1,8 @@
 # Ngrx SignalStoreFeature Conditional
 
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/michael-small/ngrx-signal-store-feature-conditional)
+
+
 [Live/Archived stream: "Dynamic SignalStore Features with Conditional Types"](https://www.youtube.com/watch?v=1D8VTlTnJ2E)
 
     🚀 Dynamic SignalStore CRUD: Built for Flexibility
@@ -17,6 +20,8 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Development server
 
+You can run the repo in Stackblitz automatically if you want with the button at the top. But if you want to run it locally: 
+
 To start a local development server, run:
 
 ```bash
@@ -24,6 +29,15 @@ ng serve
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+
+## Links
+
+- [Fabian's article](https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/)  
+- [withDataService](https://ngrx-toolkit.angulararchitects.io/docs/with-data-service)
+- [signalStoreFeature docs](https://ngrx.io/guide/signals/signal-store/custom-store-features)
+- [Slides](https://docs.google.com/presentation/d/1nZpCFDqNtvtZ-7AJ68WEEGSbYJd6-mAE4lZqCYwlLkg/edit?usp=sharing)
+- [Repo](https://github.com/michael-small/ngrx-signal-store-feature-conditional)
+- [Stream/VOD](https://www.youtube.com/watch?v=1D8VTlTnJ2E)
 
 ## Running unit tests
 
