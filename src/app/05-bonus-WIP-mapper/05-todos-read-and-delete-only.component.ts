@@ -1,36 +1,32 @@
 import { Component, inject, Injectable } from '@angular/core';
-import { JsonPipe } from '@angular/common';
-import { signalStore, withState } from '@ngrx/signals';
 import { delay, map, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { withCrudConditional } from './04-feature';
-import { CrudService, Todo, TodoState } from '../shared/todos.model';
+import { signalStore, withProps, withState } from '@ngrx/signals';
+import { withCrudMappings } from './05-conditional-map-methods.store.feature';
+import { withFeatureFactory } from '@angular-architects/ngrx-toolkit';
+import { JsonPipe } from '@angular/common';
+import { Todo, TodoState } from '../shared/todos.model';
 
 @Injectable({
     providedIn: 'root',
 })
-class TodoReadAndDeleteOnlyService implements Pick<CrudService<Todo>, 'readAll' | 'readOne' | 'delete'> {
+export class TodoReadAndDeleteMappingService {
     private readonly http = inject(HttpClient);
 
     private url = `https://jsonplaceholder.typicode.com/todos`;
 
-    readOne(id: number) {
-        return this.http.get<Todo>(`${this.url}/${id}`).pipe(
-            delay(1000)
-        );
+    getOneDifferentName(id: number) {
+        return this.http.get<Todo>(`${this.url}/${id}`).pipe(delay(1000));
     }
 
-    readAll(): Observable<Todo[]> {
-        return this.http.get<Todo[]>(this.url).pipe(
-            map(todos => todos.filter(td => td.id < 3)),
-            delay(1000)
-        );
+    getAllDifferentName(): Observable<Todo[]> {
+        return this.http
+            .get<Todo[]>(this.url)
+            .pipe(map((todos) => todos.filter((td) => td.id < 3)), delay(1000));
     }
 
-    delete(value: Todo) {
-        return this.http.delete(`${this.url}/${value.id}`).pipe(
-            delay(500)
-        );
+    deleteDifferent(value: Partial<Todo>) {
+        return this.http.delete<Todo>(`${this.url}/${value.id}`).pipe(delay(1000));
     }
 }
 
@@ -41,19 +37,20 @@ export const initialState: TodoState = {
 };
 
 const TodoReadAndDeleteOnlyStore = signalStore(
-    { providedIn: 'root' },
     withState(initialState),
-    withCrudConditional(TodoReadAndDeleteOnlyService, {
-        create: false,
-        readAll: true,
-        readOne: true,
-        update: false,
-        delete: true,
-    })
+    withProps(() => ({ serv: inject(TodoReadAndDeleteMappingService) })),
+    withFeatureFactory((store) =>
+        withCrudMappings({
+            readAll: () => store.serv.getAllDifferentName(),
+            readOne: (value: number) => store.serv.getOneDifferentName(value),
+            create: false,
+            update: false,
+            delete: (value: Partial<Todo>) => store.serv.deleteDifferent(value)
+        })
+    )
 );
-
 @Component({
-    selector: 'app-todos-read-and-delete-basic',
+    selector: 'app-todos-read-and-delete-mapping',
     imports: [JsonPipe],
     template: `
         <h2>CD</h2>   
@@ -76,7 +73,7 @@ const TodoReadAndDeleteOnlyStore = signalStore(
     `,
     providers: [TodoReadAndDeleteOnlyStore]
 })
-export class TodosReadAndDeleteOnlyComponent04 {
+export class TodosReadAndDeleteOnlyMapComponent05 {
     todoStore = inject(TodoReadAndDeleteOnlyStore);
 
     todos = this.todoStore.items;
@@ -86,11 +83,11 @@ export class TodosReadAndDeleteOnlyComponent04 {
     }
 
     getTodo(id: Todo['id']) {
-        this.todoStore.readOne(id)
+        this.todoStore.getOne(id)
     }
 
     getTodos() {
-        this.todoStore.readAll();
+        this.todoStore.getAll();
     }
 
     ngOnInit() {

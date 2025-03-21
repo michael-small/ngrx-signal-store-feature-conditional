@@ -2,7 +2,7 @@ import { Component, inject, Injectable, signal } from '@angular/core';
 import { JsonPipe } from '@angular/common';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable, pipe, switchMap } from 'rxjs';
+import { delay, map, Observable, pipe, switchMap } from 'rxjs';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
@@ -23,25 +23,28 @@ class TodoAllCRUDService {
     private url = `https://jsonplaceholder.typicode.com/todos`;
 
     getItem(id: number) {
-        return this.http.get<Todo>(`${this.url}/${id}`);
+        return this.http.get<Todo>(`${this.url}/${id}`).pipe(
+            delay(1000)
+        );
     }
 
     getItems(): Observable<Todo[]> {
         return this.http.get<Todo[]>(this.url).pipe(
-            map(todos => todos.filter(td => td.id < 3))
+            map(todos => todos.filter(td => td.id < 3)),
+            delay(1000)
         );
     }
 
     addItem(value: Todo) {
-        return this.http.post<Todo>(this.url, { value });
+        return this.http.post<Todo>(this.url, { value }).pipe(delay(1000));
     }
 
     updateItem(value: Todo) {
-        return this.http.put<Todo>(`${this.url}/${value.id}`, value);
+        return this.http.put<Todo>(`${this.url}/${value.id}`, value).pipe(delay(500));
     }
 
     deleteItem(value: Todo) {
-        return this.http.delete(`${this.url}/${value.id}`);
+        return this.http.delete(`${this.url}/${value.id}`).pipe(delay(500));
     }
 }
 
@@ -60,7 +63,7 @@ const initialState: TodoState = {
 
 const TodoAllCRUDStore = signalStore(
     withState(initialState),
-    withMethods(( store, service = inject(TodoAllCRUDService) ) => ({
+    withMethods((store, service = inject(TodoAllCRUDService)) => ({
         addItem: rxMethod<Todo>(
             pipe(
                 switchMap((value) => {
@@ -170,20 +173,23 @@ const TodoAllCRUDStore = signalStore(
     imports: [JsonPipe],
     template: `
         <h1>01 Boilerplate Store HTTP</h1>
-        <p>hey</p>
 
-        @for (todo of todos(); track $index) {
-            <div>
-                <pre>{{todo | json}}</pre>
-                <button (click)="removeTodo(todo)">x</button>
-                <button (click)="updateTodo(todo)">Flip completed state</button>
-            </div>
-        }
-        <br />
-        <button (click)="addTodos()">Add TODOs</button>
-        <button (click)="getTodo(1)">Get TODO #1</button>
-        @if (todoStore.selectedItem()) {
-            <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+        @if (todoStore.loading()) {
+            <p>Loading...</p>
+        } @else {
+            @for (todo of todos(); track $index) {
+                <div>
+                    <pre>{{todo | json}}</pre>
+                    <button (click)="removeTodo(todo)">x</button>
+                    <button (click)="updateTodo(todo)">Flip completed state</button>
+                </div>
+            }
+            <br />
+            <button (click)="addTodos()">Add TODOs</button>
+            <button (click)="getTodo(1)">Get TODO #1</button>
+            @if (todoStore.selectedItem()) {
+                <pre>Todo #1: {{todoStore.selectedItem() | json}}</pre>
+            }
         }
     `,
     providers: [TodoAllCRUDStore]

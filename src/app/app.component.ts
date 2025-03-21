@@ -21,6 +21,7 @@ export class AppComponent {
         { url: '/01-boilerplate-store-http' },
         { url: '/02-simple-crud-feature' },
         { url: '/03-stream-wip-conditional-feature' },
-        { url: '/04-final-conditional-feature' }
+        { url: '/04-final-conditional-feature' },
+        { url: '/05-bonus-WIP-mapper' }
     ]
 }
