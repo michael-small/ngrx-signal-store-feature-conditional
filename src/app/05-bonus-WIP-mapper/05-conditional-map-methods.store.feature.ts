@@ -4,25 +4,15 @@ import { patchState, signalStoreFeature, type, withMethods, withComputed } from 
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 
-// The general structure/implementation of the service + CRUD methods for this example were started on top of
-// - This article's example: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
-// - And the ngrx-toolkit's `withDataService()` approach: https://ngrx-toolkit.angulararchitects.io/docs/with-data-service
-// and then expanded on to make these opt-in / conditional features
-
 // Gaurantees minimum identifier + type
 export type BaseEntity = { id?: number };
 
-// Minimum for CRUD feature
 export type BaseState<Entity> = {
     selectedItem: Entity | null;
     items: Entity[];
     loading: boolean;
 };
 
-// Feature users can pick and choose what to enable
-//
-// This shape is obtuse but for a proof of concept whatever. Should just be able in theory to
-//     do `readAll: true` OR `readAll: {method: Observable<T[]>}` OR just omit one rather than need a `read: false`
 type CrudConfig<T extends BaseEntity> = {
     readAll: ((search?: any) => Observable<T[]>) | false;
     readOne: ((val: T['id']) => Observable<T>) | false;
