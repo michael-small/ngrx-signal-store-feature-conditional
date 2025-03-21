@@ -54,6 +54,9 @@ export function withCrudConditional<
                         switchMap((value) => {
                             patchState(store, { loading: true });
 
+                            // Non null assertions (`!`) here:
+                            //     Needed since `service` is a `Partial`
+                            //     Not cheating since we guard w/ and `if(config.create)`
                             return service.create!(value).pipe(
                                 tapResponse({
                                     next: (addedItem) => {

@@ -11,8 +11,13 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { BaseEntity, BaseState, CrudService } from '../shared/todos-and-store.model';
 
-// By Fabian: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
+// Starting state by Fabian: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
 
+// Stepds:
+// 1) Add a generic for our Config
+// 2) Define the Config and the 
+// 3) Define out desired return type which corresponds to the Config
+// 4) Implement the methods
 export function withCrudOperations<Entity extends BaseEntity>(
     dataServiceType: Type<CrudService<Entity>> // pass the service here
 ) {
