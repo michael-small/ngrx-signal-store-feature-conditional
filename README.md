@@ -32,7 +32,7 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 ## Links
 
-- [Fabian's article](https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/)  
+- [Fabian Gosebrink's article](https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/)  
 - [withDataService](https://ngrx-toolkit.angulararchitects.io/docs/with-data-service)
 - [signalStoreFeature docs](https://ngrx.io/guide/signals/signal-store/custom-store-features)
 - [Slides](https://docs.google.com/presentation/d/1nZpCFDqNtvtZ-7AJ68WEEGSbYJd6-mAE4lZqCYwlLkg/edit?usp=sharing)

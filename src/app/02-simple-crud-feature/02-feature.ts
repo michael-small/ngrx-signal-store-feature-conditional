@@ -11,7 +11,7 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { tapResponse } from '@ngrx/operators';
 import { BaseEntity, BaseState, CrudService } from '../shared/todos-and-store.model';
 
-// By Fabian: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
+// By Fabian Gosebrink: https://offering.solutions/blog/articles/2024/02/07/extending-the-ngrx-signal-store-with-a-custom-feature/
 
 export function withCrudOperations<Entity extends BaseEntity>(
     dataServiceType: Type<CrudService<Entity>> // pass the service here
