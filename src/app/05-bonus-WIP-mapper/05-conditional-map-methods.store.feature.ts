@@ -13,19 +13,20 @@ export type BaseState<Entity> = {
     loading: boolean;
 };
 
-type CrudConfig<T extends BaseEntity> = {
-    readAll: ((search?: any) => Observable<T[]>) | false;
+type CrudConfig<T extends BaseEntity, GetAllType extends any> = {
+    readAll: ((search: GetAllType) => Observable<T[]>) | false;
 };
 
-type MethodRead<T> = (search?: any) => Observable<T[]>;
+type MethodRead<T, GetAllType> = (search: GetAllType) => Observable<T[]>;
 
 // Methods returned by the store are conditonal to the config provided
 type CrudMethods<
-    Config extends CrudConfig<Entity>,
+    Config extends CrudConfig<Entity, GetAllType>,
     Entity extends BaseEntity,
-> = (Config['readAll'] extends MethodRead<Entity> ? { getAll: (search?: any) => void } : {}) 
+    GetAllType
+> = (Config['readAll'] extends MethodRead<Entity, GetAllType> ? { getAll: (search: GetAllType) => void } : {}) 
 
-export function withCrudMappings<Config extends CrudConfig<Entity>, Entity extends BaseEntity>(config: Config) {
+export function withCrudMappings<Config extends CrudConfig<Entity, GetAllType>, Entity extends BaseEntity, GetAllType extends any>(config: Config) {
     return signalStoreFeature(
         {
             state: type<BaseState<Entity>>(),
@@ -36,7 +37,7 @@ export function withCrudMappings<Config extends CrudConfig<Entity>, Entity exten
 
             const configReadAll = config.readAll;
             if (configReadAll) {
-                const getAll = rxMethod<any>(
+                const getAll = rxMethod<GetAllType>(
                     pipe(
                         switchMap(val => {
                             patchState(store, { loading: true });
@@ -55,7 +56,7 @@ export function withCrudMappings<Config extends CrudConfig<Entity>, Entity exten
                         })
                     )
                 );
-                methods['getAll'] = (val?: any) => getAll(val);
+                methods['getAll'] = (val: GetAllType) => getAll(val);
             }
 
             /**
@@ -65,7 +66,7 @@ export function withCrudMappings<Config extends CrudConfig<Entity>, Entity exten
              *     delete: (value) => d3lete(value)
              * }
              */
-            return methods as CrudMethods<Config, Entity>;
+            return methods as CrudMethods<Config, Entity, GetAllType>;
         })
     );
 }

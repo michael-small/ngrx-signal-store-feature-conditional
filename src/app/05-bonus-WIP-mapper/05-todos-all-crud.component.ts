@@ -48,8 +48,8 @@ const TodoAllCRUDStore = signalStore(
     withState(initialState),
     withProps(() => ({ serv: inject(TodoAllCRUDMappingService) })),
     withFeatureFactory((store) =>
-        withCrudMappings({
-            readAll: () => store.serv.getAllDifferentName(),
+        withCrudMappings<{readAll: ((search: string) => Observable<Todo[]>)}, Todo, string>({
+            readAll: (search: string) => store.serv.getAllDifferentName(),
         })
     )
 );
@@ -101,7 +101,7 @@ export class TodosAllCrudMapComponent05 {
     // }
 
     getTodos() {
-        this.todoStore.getAll();
+        this.todoStore.getAll('');
     }
 
     // updateTodo(todo: Todo) {
